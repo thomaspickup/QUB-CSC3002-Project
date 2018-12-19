@@ -13,8 +13,22 @@ def main():
             filepath = os.path.join(directory, file)
 
             data = getJSON(filepath)
+            api_names = []
 
             print(data['info']['id'])
+            for processes in data['behavior']['processes']:
+                for call in processes['calls']:
+                    found = False
+
+                    for name in api_names:
+                        if call['api'] == name:
+                            found = True
+
+                    if found == False:
+                        api_names.append(call['api'])
+
+            for name in api_names:
+                print(name)
 
 if __name__ == "__main__":
     main()
