@@ -1,4 +1,5 @@
 import json, os
+
 def getJSON(filepath):
     with open(filepath) as file:
         json_file = json.load(file)
@@ -8,12 +9,13 @@ def getJSON(filepath):
 def main():
     directory = '/Users/thomaspickup/Documents/University/CSC3002/Assignment/CSC3002-Project/Malware Reports'
 
+    api_names = []
+
     for file in os.listdir(directory):
         if file.endswith('.json'):
             filepath = os.path.join(directory, file)
 
             data = getJSON(filepath)
-            api_names = []
 
             print(data['info']['id'])
             for processes in data['behavior']['processes']:
@@ -27,8 +29,8 @@ def main():
                     if found == False:
                         api_names.append(call['api'])
 
-            for name in api_names:
-                print(name)
+    for name in api_names:
+        print(name)
 
 if __name__ == "__main__":
     main()
