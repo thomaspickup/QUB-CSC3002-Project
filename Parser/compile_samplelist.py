@@ -59,6 +59,6 @@ def main():
             writer = csv.writer(csv_file, lineterminator='\n')
             writer.writerows(sample_list)
 
-    print("~~ DataSet List Production Complete ~~")
+    print("~~ Sample List Production: Complete ~~")
 if __name__ == "__main__":
     main()

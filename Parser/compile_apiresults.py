@@ -71,7 +71,7 @@ def main():
 
             # Adds result to python list ['api_name', 'times_called']
             row.append(count)
-            
+
         # Adds list row to table
         dataset.append(row)
 
@@ -81,5 +81,7 @@ def main():
         writer = csv.writer(dataset_file, lineterminator='\n')
         writer.writerows(dataset)
 
+    print("~~ API Results Production: Complete ~~")
+    
 if __name__ == "__main__":
     main()
