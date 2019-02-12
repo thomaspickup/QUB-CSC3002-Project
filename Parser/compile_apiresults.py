@@ -12,7 +12,7 @@ def main():
 
     # Sets up the python lists
     dataset = []
-    headers = ["FamilyID", "SampleID"]
+    headers = ["SampleName"]
     api_names = []
     json_filepaths = []
 
@@ -50,16 +50,11 @@ def main():
         # Creates empty array to store results
         row = []
 
-        # Adds malware type and ID to python list
-        filename = file.replace('.json', '').replace(directory, '').replace('/','')
-        familyID = filename.split('-')[0]
-        sampleID = filename.split('-')[1]
-        row.append(familyID)
-        row.append(sampleID)
-
         # Gets json file
         data = getJSON(filepath)
 
+        row.append(data['target']['file']['md5'])
+        
         # Loops through all the api_names
         for api in api_names:
             count = 0
@@ -82,6 +77,6 @@ def main():
         writer.writerows(dataset)
 
     print("~~ API Results Production: Complete ~~")
-    
+
 if __name__ == "__main__":
     main()
