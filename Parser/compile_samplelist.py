@@ -16,6 +16,7 @@ def main():
     sample_types = []
     excluded_files = [".DS_Store"]
 
+    print("- Gathering MD5 Hashes and Malware Types")
     if os.path.isdir(sample_directory):
         for root, dirs, files in os.walk(sample_directory):
             for file in files:
@@ -27,6 +28,8 @@ def main():
     next_malware_id = 0
     next_sample_id = 0
 
+    print('- Creating Sample List Table')
+    print('- Creating Malware Types Table')
     for st in sample_types:
         malware_id = ""
         id_found = False
@@ -51,10 +54,12 @@ def main():
         sample_name = file_names[1]
         sample_csv = os.path.join(output_directory, sample_name)
 
+        print("- Saving Malware Types Table")
         with open(type_csv, "w") as csv_file:
             writer = csv.writer(csv_file, lineterminator='\n')
             writer.writerows(malware_types)
 
+        print("- Saving Sample List Table")
         with open(sample_csv, "w") as csv_file:
             writer = csv.writer(csv_file, lineterminator='\n')
             writer.writerows(sample_list)

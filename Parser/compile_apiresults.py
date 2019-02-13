@@ -1,4 +1,4 @@
-import json, os, csv
+import json, os, csv, sys
 
 def getJSON(filepath):
     with open(filepath) as file:
@@ -8,7 +8,15 @@ def getJSON(filepath):
 
 def main():
     # The directory that the malware reports are stored in
-    directory = '/Users/thomaspickup/Documents/University/CSC3002/Assignment/CSC3002-Project/Malware-Reports'
+    report_directory = ''
+    dataset_directory = ''
+
+    if len(sys.argv) == 3:
+        report_directory = sys.argv[1]
+        dataset_directory = sys.argv[2]
+    else:
+        report_directory = "/reports"
+        dataset_directory = "/output"
 
     # Sets up the python lists
     dataset = []
@@ -16,10 +24,11 @@ def main():
     api_names = []
     json_filepaths = []
 
-    for file in os.listdir(directory):
+    print("- Gathering API Headers")
+    for file in os.listdir(report_directory):
         if file.endswith('.json'):
             # Stores the filepaths that end with .json in a list
-            filepath = os.path.join(directory, file)
+            filepath = os.path.join(report_directory, file)
             json_filepaths.append(filepath)
 
             # Opens the JSON file and decodes the JSON
@@ -46,6 +55,7 @@ def main():
     # Appends headers to dataset
     dataset.append(headers)
 
+    print("- Counting API Interances")
     for file in json_filepaths:
         # Creates empty array to store results
         row = []
@@ -54,7 +64,7 @@ def main():
         data = getJSON(filepath)
 
         row.append(data['target']['file']['md5'])
-        
+
         # Loops through all the api_names
         for api in api_names:
             count = 0
@@ -70,8 +80,9 @@ def main():
         # Adds list row to table
         dataset.append(row)
 
+    print("- Exporting API Results Table")
     # Exports table to csv file
-    dataset_csv = directory + "/dataset.csv"
+    dataset_csv = dataset_directory + "/api_results.csv"
     with open(dataset_csv, "w") as dataset_file:
         writer = csv.writer(dataset_file, lineterminator='\n')
         writer.writerows(dataset)
