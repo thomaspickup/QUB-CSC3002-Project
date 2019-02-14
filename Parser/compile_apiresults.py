@@ -29,10 +29,13 @@ def main():
         if file.endswith('.json'):
             # Stores the filepaths that end with .json in a list
             filepath = os.path.join(report_directory, file)
-            json_filepaths.append(filepath)
+
 
             # Opens the JSON file and decodes the JSON
             data = getJSON(filepath)
+
+            if 'behavior' not in data:
+                continue
 
             # Loops through all the processes
             for processes in data['behavior']['processes']:
@@ -48,6 +51,8 @@ def main():
                     if found == False:
                         api_names.append(call['api'])
 
+            json_filepaths.append(filepath)
+
     # Adds the API names as table headers
     for name in api_names:
         headers.append(name)
@@ -61,7 +66,7 @@ def main():
         row = []
 
         # Gets json file
-        data = getJSON(filepath)
+        data = getJSON(file)
 
         row.append(data['target']['file']['md5'])
 
@@ -69,6 +74,7 @@ def main():
         for api in api_names:
             count = 0
             # Counts how many times this api was called
+
             for processes in data['behavior']['processes']:
                 for call in processes['calls']:
                     if call['api'] == api:

@@ -1,10 +1,5 @@
-import json, os, csv, sys
-
-def getJSON(filepath):
-    with open(filepath) as file:
-        json_file = json.load(file)
-
-    return json_file
+import os, sys
+from shutil import copyfile
 
 def main():
     # The directory that the exports from the cuckoo environment are stored
@@ -18,9 +13,18 @@ def main():
         raw_directory = "/reports"
         report_directory = "/output"
 
-    print(raw_directory)
-    print(report_directory)
+    print("- Starting Copying of Reports")
+    count = 0
 
+    for name in os.listdir(raw_directory):
+        if name != ".DS_Store":
+            results_file = raw_directory + "/" + name + "/reports/report.json"
+            new_file = report_directory + "/" + name + ".json"
+
+            print(new_file)
+            copyfile(results_file, new_file)
+            count = count + 1
+    print("- Finished Copying " + str(count) + " report(s).")
     print("~~ API Results Retrieval: Complete ~~")
 
 if __name__ == "__main__":
