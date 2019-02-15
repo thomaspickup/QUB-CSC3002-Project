@@ -30,6 +30,13 @@ def main():
 
     print('- Creating Sample List Table')
     print('- Creating Malware Types Table')
+
+    malware_headers = ['MalwareID', 'MalwareName']
+    sample_headers = ['SampleID', 'MalwareID', 'MD5hash']
+
+    malware_types.append(malware_headers)
+    sample_list.append(sample_headers)
+
     for st in sample_types:
         malware_id = ""
         id_found = False
