@@ -15,8 +15,8 @@ def main():
         report_directory = sys.argv[1]
         dataset_directory = sys.argv[2]
     else:
-        report_directory = "/reports"
-        dataset_directory = "/output"
+        report_directory = r"R:\\"
+        dataset_directory = r'C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\csc3002-project\\dataset'
 
     # Sets up the python lists
     dataset = []
@@ -88,7 +88,7 @@ def main():
 
     print("- Exporting API Results Table")
     # Exports table to csv file
-    dataset_csv = dataset_directory + "/api_results.csv"
+    dataset_csv = dataset_directory + "\\api_results.csv"
     with open(dataset_csv, "w") as dataset_file:
         writer = csv.writer(dataset_file, lineterminator='\n')
         writer.writerows(dataset)

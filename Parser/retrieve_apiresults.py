@@ -10,16 +10,16 @@ def main():
         raw_directory = sys.argv[1]
         report_directory = sys.argv[2]
     else:
-        raw_directory = "/reports"
-        report_directory = "/output"
+        raw_directory = r"m:\\"
+        report_directory = r"r:\\"
 
     print("- Starting Copying of Reports")
     count = 0
 
     for name in os.listdir(raw_directory):
-        if name != ".DS_Store":
-            results_file = raw_directory + "/" + name + "/reports/report.json"
-            new_file = report_directory + "/" + name + ".json"
+        if name != "$RECYCLE.BIN":
+            results_file = raw_directory + "/" + name + "\\reports\\report.json"
+            new_file = report_directory + "\\" + name + ".json"
 
             print(new_file)
             copyfile(results_file, new_file)

@@ -8,8 +8,8 @@ def main():
         sample_directory = sys.argv[1]
         output_directory = sys.argv[2]
     else:
-        sample_directory = "/samples"
-        output_directory = "/output"
+        sample_directory = r"C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\samples\\"
+        output_directory = r"C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\csc3002-project\\dataset\\"
 
     file_names = ['malware_types.csv', 'sample_list.csv']
 
