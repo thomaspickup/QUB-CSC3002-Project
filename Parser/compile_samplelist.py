@@ -52,7 +52,7 @@ def main():
             malware_types.append([malware_id, st[1]])
 
         next_sample_id = next_sample_id + 1
-        sample_list.append([next_sample_id, malware_id, st[0]])
+        sample_list.append([next_sample_id, malware_id, st[0].replace("VirusShare_", "")])
 
     if os.path.isdir(output_directory):
         type_name = file_names[0]

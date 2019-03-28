@@ -10,7 +10,7 @@ def main():
     # The directory that the malware reports are stored in
     report_directory = ''
     dataset_directory = ''
-    threshold_score = 1.8
+    threshold_score = 1
 
     if len(sys.argv) == 3:
         report_directory = sys.argv[1]
@@ -21,7 +21,7 @@ def main():
 
     # Sets up the python lists
     dataset = []
-    headers = ["SampleName"]
+    headers = ["SampleName", "Score"]
     api_names = []
     json_filepaths = []
 
@@ -74,6 +74,7 @@ def main():
 
 
         row.append(data['target']['file']['md5'])
+        row.append(data['info']['score'])
 
         # Loops through all the api_names
         for api in api_names:
