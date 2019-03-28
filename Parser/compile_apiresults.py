@@ -10,6 +10,7 @@ def main():
     # The directory that the malware reports are stored in
     report_directory = ''
     dataset_directory = ''
+    threshold_score = 1.8
 
     if len(sys.argv) == 3:
         report_directory = sys.argv[1]
@@ -33,6 +34,8 @@ def main():
 
             # Opens the JSON file and decodes the JSON
             data = getJSON(filepath)
+            if data['info']['score'] <= threshold_score:
+                continue
 
             if 'behavior' not in data:
                 continue
@@ -50,7 +53,7 @@ def main():
                     # If the api name isn't in the list - append it to it
                     if found == False:
                         api_names.append(call['api'])
-
+            print(filepath)
             json_filepaths.append(filepath)
 
     # Adds the API names as table headers
@@ -68,6 +71,8 @@ def main():
         # Gets json file
         data = getJSON(file)
 
+
+
         row.append(data['target']['file']['md5'])
 
         # Loops through all the api_names
@@ -84,6 +89,7 @@ def main():
             row.append(count)
 
         # Adds list row to table
+        print(file)
         dataset.append(row)
 
     print("- Exporting API Results Table")
