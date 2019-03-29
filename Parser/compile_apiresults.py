@@ -71,27 +71,26 @@ def main():
         # Gets json file
         data = getJSON(file)
 
+        if 'md5' in data['target']['file']:
+            row.append(data['target']['file']['md5'])
+            row.append(data['info']['score'])
 
+            # Loops through all the api_names
+            for api in api_names:
+                count = 0
+                # Counts how many times this api was called
 
-        row.append(data['target']['file']['md5'])
-        row.append(data['info']['score'])
+                for processes in data['behavior']['processes']:
+                    for call in processes['calls']:
+                        if call['api'] == api:
+                            count += 1
 
-        # Loops through all the api_names
-        for api in api_names:
-            count = 0
-            # Counts how many times this api was called
+                # Adds result to python list ['api_name', 'times_called']
+                row.append(count)
 
-            for processes in data['behavior']['processes']:
-                for call in processes['calls']:
-                    if call['api'] == api:
-                        count += 1
-
-            # Adds result to python list ['api_name', 'times_called']
-            row.append(count)
-
-        # Adds list row to table
-        print(file)
-        dataset.append(row)
+            # Adds list row to table
+            print(file)
+            dataset.append(row)
 
     print("- Exporting API Results Table")
     # Exports table to csv file
