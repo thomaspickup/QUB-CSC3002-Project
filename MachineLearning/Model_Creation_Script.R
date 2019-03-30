@@ -1,19 +1,33 @@
 print("~~ Model Production: Started ~~")
 
+# Sets working directory to dataset location
 setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Dataset")
+
+# Installs the libraries if needed and imports them
+install.packages('caret')
 library(caret)
+install.packages('e1071')
 library(e1071)
+
+# Sets the random seed to ensure repeatability
 set.seed(3002)
 
-# Dataset Prep
+# Imports the Api Results and sample list
 api.csv<-read.csv("api_results.csv")
 sample.csv<-read.csv("sample_list.csv")
+
+# Merges together to create one data frame
 ds<-merge(x=api.csv, y=sample.csv, by.x="SampleName", by.y="MD5hash")
+
+# Nullifies any identifying data
 ds$SampleName<-NULL
 ds$SampleID<-NULL
 ds$Score<-NULL
+
+# Changes malware ID to be a factor rather than an integer
 ds$MalwareID = as.factor(ds$MalwareID)
 
+# Gets the ID of the malwareID column 
 malwareID_Col <- ncol(ds)
 lastFeature_Col <- malwareID_Col - 1
 
@@ -39,9 +53,11 @@ nr_correct<-nrow(ds.test[correct_predictions,])
 nr_test_items<-nrow(ds.test)
 nr_incorrect<-nr_test_items - nr_correct
 
+# Saves the model to file
 setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Model")
 save(model, file = 'knn_model.rda')
 
+# Outputs the stats file
 fileConn<-file("accuracies.txt")
 accuracy <- round((nr_correct/nr_test_items) * 100, digits=2)
 output <- c(paste("Accuracy: ", accuracy, "%", sep = ""),
@@ -52,6 +68,9 @@ output <- c(paste("Accuracy: ", accuracy, "%", sep = ""),
 writeLines(output, fileConn)
 close(fileConn)
 
+# Writes confusion matrix to csv file
 write.csv(cMatrix$byClass, file = "confusionMatrix.csv")
+
+write.table(t(colnames(ds[1:lastFeature_Col])), file = "api_headers.csv", sep = ",",  col.names = FALSE, row.names = FALSE)
 
 print("~~ Model Production: Complete ~~")
