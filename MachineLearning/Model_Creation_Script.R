@@ -4,9 +4,7 @@ print("~~ Model Production: Started ~~")
 setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Dataset")
 
 # Installs the libraries if needed and imports them
-install.packages('caret')
 library(caret)
-install.packages('e1071')
 library(e1071)
 
 # Sets the random seed to ensure repeatability

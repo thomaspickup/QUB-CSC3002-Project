@@ -11,5 +11,5 @@ if (dataset_production_run == 'Y' or dataset_production_run == 'y'):
 if (model_production_run == 'Y' or model_production_run == 'y'):
     subprocess.Popen([r"C:\Program Files\R\R-3.5.3patched\bin\rscript.exe",r"MachineLearning\Model_Creation_Script.R"])
 
-if (model_evaluation_run == 'Y' or model_evaluation_run == 'y'):
+#if (model_evaluation_run == 'Y' or model_evaluation_run == 'y'):
     # subprocess.Popen([r"C:\Program Files\R\R-3.5.3patched\bin\rscript.exe",r"MachineLearning\Model_Creation_Script.R"])
