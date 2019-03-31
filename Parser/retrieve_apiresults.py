@@ -16,14 +16,15 @@ def main():
     print("- Starting Copying of Reports")
     count = 0
 
+    exclude = ["$RECYCLE.BIN", "System Volume Information"]
     for name in os.listdir(raw_directory):
-        if name != "$RECYCLE.BIN":
+        if name not in exclude:
             results_file = raw_directory + "/" + name + "\\reports\\report.json"
             new_file = report_directory + "\\" + name + ".json"
-
-            print(new_file)
-            copyfile(results_file, new_file)
-            count = count + 1
+            if os.path.isfile(new_file) == False:
+                print(new_file)
+                copyfile(results_file, new_file)
+                count = count + 1
     print("- Finished Copying " + str(count) + " report(s).")
     print("~~ API Results Retrieval: Complete ~~")
 
