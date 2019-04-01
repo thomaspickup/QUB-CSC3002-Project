@@ -1,5 +1,5 @@
-Accuracy: 72.41%
+Accuracy: 72.11%
 
-Correct: 189 Predictions
-Incorrect: 72 Predictions
-Total: 261 Test Items
+Correct: 212 Predictions
+Incorrect: 82 Predictions
+Total: 294 Test Items
