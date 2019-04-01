@@ -24,6 +24,7 @@ To run this project you need installed:
 
 ## To Do List
 In order of tasks
+* Add in PATH Variable check to allow for rscript from os.system()
 * Implement Boruta to attempt to select features from dataset
 * Add in Benign files and expand model to output whether it thinks something is malicious or not
 * Test with the decision tree algorithm

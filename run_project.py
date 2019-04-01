@@ -19,7 +19,8 @@ if (dataset_production_run == 'Y' or dataset_production_run == 'y'):
 if (model_production_run == 'Y' or model_production_run == 'y'):
     # Runs Model Creation Script
     print("\n%% Starting Model Production %%")
-    subprocess.Popen([r"C:\Program Files\R\R-3.5.3patched\bin\rscript.exe",r"MachineLearning\Model_Creation_Script.R"])
+    os.system(r"rscript C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\MachineLearning\Model_Creation_Script.R")
+    os.system("python Parser/print_accuracy.py")
     print("%% Finished Model Production %%\n")
 
 # if (model_evaluation_run == 'Y' or model_evaluation_run == 'y'):
