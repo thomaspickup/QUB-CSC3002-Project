@@ -24,9 +24,8 @@ To run this project you need installed:
 
 ## To Do List
 In order of tasks
-* Implement Timing to compile_apiresults.py
-* Add in Benign files and expand model to output whether it thinks something is malicious or not
 * Implement Boruta to attempt to select features from dataset
+* Add in Benign files and expand model to output whether it thinks something is malicious or not
 * Test with the decision tree algorithm
 * Implement a product version that takes in the model and an api result and then outputs its predicted status
 
