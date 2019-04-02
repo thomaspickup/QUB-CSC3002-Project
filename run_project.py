@@ -1,4 +1,4 @@
-import os, subprocess, datetime
+import os, datetime
 
 # Prints debugging and start time
 print("==== Running Project ====")
