@@ -1,4 +1,4 @@
-print("~~ Model Production: Started ~~")
+cat("~~ Model Production: Started ~~\n")
 
 # Sets working directory to dataset location
 setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Dataset")
@@ -6,6 +6,7 @@ setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment
 # Installs the libraries if needed and imports them
 library(caret)
 library(e1071)
+library(Boruta)
 
 # Sets the random seed to ensure repeatability
 set.seed(3002)
@@ -31,14 +32,25 @@ ds$MalwareID = as.factor(ds$MalwareID)
 malwareID_Col <- ncol(ds)
 lastFeature_Col <- malwareID_Col - 1
 
+# Uses the boruta algorithm to pick out the best features
+ds.boruta <- Boruta(ds[, malwareID_Col]~., data = ds, doTrace = 2)
+ds.boruta.final <- TentativeRoughFix(ds.boruta)
+ds.selected.attributes<-getSelectedAttributes(ds.boruta.final, withTentative = F)
+
+# Gets the final dataset using only the selected features
+ds.final <- ds[,ds.selected.attributes]
+
+malwareID_Col <- ncol(ds.final)
+lastFeature_Col <- malwareID_Col - 1
+
 # Create index to split based on labels  
-index <- createDataPartition(ds$MalwareID, p=0.75, list=FALSE)
+index <- createDataPartition(ds.final$MalwareID, p=0.75, list=FALSE)
 
 # Subset training set with index
-ds.training <- ds[index,]
+ds.training <- ds.final[index,]
 
 # Subset test set with index
-ds.test <- ds[-index,]
+ds.test <- ds.final[-index,]
 
 # Train a model
 model <- train(ds.training[, 1:lastFeature_Col], ds.training[, malwareID_Col], method='knn')
@@ -72,7 +84,7 @@ close(fileConn)
 write.csv(cMatrix$byClass, file = "confusionMatrix.csv")
 
 # Writes the api_headers to a csv for use with model
-write.table(t(colnames(ds[1:lastFeature_Col])), file = "api_headers.csv", sep = ",",  col.names = FALSE, row.names = FALSE)
+write.table(t(colnames(ds.final[1:lastFeature_Col])), file = "api_headers.csv", sep = ",",  col.names = FALSE, row.names = FALSE)
 
 # Exports the list of malware used to text file
 malware.used<- data.frame(mu$SampleName, mu$MalwareID, mu$MalwareName)
@@ -106,4 +118,4 @@ for (i in 1:nrow(malware.used)) {
 writeLines(outputMal, fileConn)
 close(fileConn)
 
-print("~~ Model Production: Complete ~~")
+cat("~~ Model Production: Complete ~~\n")
