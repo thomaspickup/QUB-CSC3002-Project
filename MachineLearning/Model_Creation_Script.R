@@ -3,7 +3,7 @@ cat("~~ Model Production: Started ~~\n")
 # Sets working directory to dataset location
 setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Dataset")
 
-# Installs the libraries if needed and imports them
+cat("- Importing Libraries\n")
 library(caret)
 library(e1071)
 library(Boruta)
@@ -11,7 +11,7 @@ library(Boruta)
 # Sets the random seed to ensure repeatability
 set.seed(3002)
 
-# Imports the Api Results and sample list
+cat("- Importing Dataset as CSV\n")
 api.csv<-read.csv("api_results.csv")
 sample.csv<-read.csv("sample_list.csv")
 malware.csv<-read.csv("malware_types.csv")
@@ -32,7 +32,7 @@ ds$MalwareID = as.factor(ds$MalwareID)
 malwareID_Col <- ncol(ds)
 lastFeature_Col <- malwareID_Col - 1
 
-# Uses the boruta algorithm to pick out the best features
+cat("- Performing Boruta Algorithm\n")
 ds.boruta <- Boruta(ds[, malwareID_Col]~., data = ds, doTrace = 2)
 ds.boruta.final <- TentativeRoughFix(ds.boruta)
 ds.selected.attributes<-getSelectedAttributes(ds.boruta.final, withTentative = F)
@@ -44,7 +44,7 @@ malwareID_Col <- ncol(ds.final)
 lastFeature_Col <- malwareID_Col - 1
 
 # Create index to split based on labels  
-index <- createDataPartition(ds.final$MalwareID, p=0.75, list=FALSE)
+index <- createDataPartition(ds.final$MalwareID, p=0.9, list=FALSE)
 
 # Subset training set with index
 ds.training <- ds.final[index,]
@@ -52,13 +52,14 @@ ds.training <- ds.final[index,]
 # Subset test set with index
 ds.test <- ds.final[-index,]
 
-# Train a model
+cat("- Training Model\n")
 model <- train(ds.training[, 1:lastFeature_Col], ds.training[, malwareID_Col], method='knn')
 
-# Predict the labels of the test set
+cat("- Evaluating Model with test set\n")
 predictions<-predict(object=model,ds.test[,1:lastFeature_Col])
 
 # Evaluate the predictions
+cat("- Saving Model and statistics\n")
 correct_predictions<- predictions == ds.test[,malwareID_Col]
 cMatrix<- confusionMatrix(predictions, ds.test[,malwareID_Col])
 nr_correct<-nrow(ds.test[correct_predictions,])
