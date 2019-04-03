@@ -10,7 +10,7 @@ def main():
     # The directory that the malware reports are stored in
     report_directory = ''
     dataset_directory = ''
-    threshold_score = 1
+    threshold_score = 0.4
 
     if len(sys.argv) == 3:
         report_directory = sys.argv[1]
