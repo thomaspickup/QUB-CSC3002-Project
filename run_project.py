@@ -8,7 +8,7 @@ print("Started Project at " + str(startDateTime) + "\n")
 # Asks the runner what parts of the project they want to run
 dataset_production_run = raw_input("Produce new dataset (Y/N): ")
 model_production_run = raw_input("Produce new model (Y/N): ")
-# model_evaluation_run = raw_input("Run Model against APIs in TestSet (Y/N): ")
+model_evaluation_run = raw_input("Run Product (Y/N): ")
 
 if (dataset_production_run == 'Y' or dataset_production_run == 'y'):
     # Runs dataset compilation script
@@ -24,8 +24,8 @@ if (model_production_run == 'Y' or model_production_run == 'y'):
     os.system("python Parser/print_accuracy.py")
     print("%% Finished Model Production %%\n")
 
-# if (model_evaluation_run == 'Y' or model_evaluation_run == 'y'):
-    # subprocess.Popen([r"C:\Program Files\R\R-3.5.3patched\bin\rscript.exe",r"MachineLearning\Model_Creation_Script.R"])
+if (model_evaluation_run == 'Y' or model_evaluation_run == 'y'):
+    os.system("python Production/product.py")
 
 # Prints debugging to say finished time and completed project
 endDateTime = datetime.datetime.now()

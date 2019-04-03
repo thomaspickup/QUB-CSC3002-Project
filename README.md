@@ -26,6 +26,6 @@ To run this project you need installed:
 In order of tasks
 * Add in Benign files and expand model to output whether it thinks something is malicious or not
 * Test with the decision tree algorithm
-* Implement a product version that takes in the model and an api result and then outputs its predicted status
+* Make Product version able to accept exe file
 
 ## Notes
