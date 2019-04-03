@@ -1,5 +1,4 @@
-import sys, os, csv
-
+import sys, os, csv, hashlib
 def main():
     sample_directory = ""
     output_directory = ""
@@ -21,7 +20,13 @@ def main():
         for root, dirs, files in os.walk(sample_directory):
             for file in files:
                 if not file in excluded_files:
-                    sample_types.append([file, os.path.basename(root)])
+                    file_name = root + '\\' + file
+                    hash_md5 = hashlib.md5()
+                    with open(file_name, "rb") as f:
+                      for chunk in iter(lambda: f.read(4096), b""):
+                        hash_md5.update(chunk)
+
+                    sample_types.append([hash_md5.hexdigest(), os.path.basename(root)])
 
     malware_types = []
     sample_list = []

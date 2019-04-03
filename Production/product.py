@@ -1,7 +1,7 @@
 import os, requests, time, csv
 
 server_url = "http://localhost:8090/"
-malware_file = r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\Samples\CryptoRansom\VirusShare_0d86ac1b7d00520bd18eb859f23fa490"
+malware_file = raw_input("Please provide the location of the malware sample: ")# r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\Samples\CryptoRansom\VirusShare_0d86ac1b7d00520bd18eb859f23fa490"
 request_headers = {"Authorization": "Bearer S4MPL3"}
 
 print("- Submitting Test Item")
