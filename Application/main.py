@@ -1,16 +1,17 @@
 from Tkinter import *
 from tkinter import ttk
-from app_modules import processSample
+from app_modules import processSample, parserDataset
+from scripts import functions
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
 class Application(Frame):
     # UnKnown Sample Related Functions
-    def getSample(self):
+    def btnGetSamplePressed(self):
         fileName = tkFileDialog.askopenfilename(initialdir = "C:\\", title = "Select Sample File", filetypes  = (("Binary Files", "*"), ("Executable Files", "*.exe"), ("DLL Files", "*.dll")))
         self.txtFilePath.delete(0, END)
         self.txtFilePath.insert(0, fileName)
 
-    def submitSample(self):
+    def btnSubmitSamplePressed(self):
         # Gets the FileName
         fileName = self.txtFilePath.get()
         self.txtFilePath.config(state = "disabled")
@@ -32,10 +33,18 @@ class Application(Frame):
     # Model Stats
 
     # New Model
+    def btnNewModelPressed(self):
+        thread.start_new_thread(self.newModel, (self.commandWindowDisplay, ))
+
+    def newModel(self, printer):
+        command = ["rscript", r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Application\mlcore\Model_Creation_Script.R"]
+        functions.runScript(command, printer)
 
     # DataSet Stats
 
     # New DataSet
+    def btnNewDatasetPressed(self):
+        thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, ))
 
     # General Purpose Functions
     def dependancyCheckAndInstallR(self):
@@ -63,8 +72,8 @@ class Application(Frame):
         self.uploadPane = LabelFrame(self.sideBarUpper, text = "Sample Upload:", padx = 5, pady = 5)
         self.uploadPane.pack(padx = 10, pady = 10, fill = "both")
         self.txtFilePath = Entry(self.uploadPane)
-        self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.getSample)
-        self.btnSubmitSample = Button(self.uploadPane, text = "Submit", command = self.submitSample)
+        self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.btnGetSamplePressed)
+        self.btnSubmitSample = Button(self.uploadPane, text = "Submit", command = self.btnSubmitSamplePressed)
         self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "ew", padx = 5 , pady = 5)
         self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
@@ -72,12 +81,12 @@ class Application(Frame):
         # Sets up the Dataset Model uploadPane
         self.dsmodelPane = LabelFrame(self.sideBarUpper, text = "DataSet / Model", padx = 5, pady = 5)
         self.dsmodelPane.pack(padx = 10, pady = 10, fill = "both")
-        self.btnNewDataset = Button(self.dsmodelPane, text = "New DataSet", command = self.getSample)
-        self.btnNewModel = Button(self.dsmodelPane, text = "New Model", command = self.submitSample)
+        self.btnNewDataset = Button(self.dsmodelPane, text = "New DataSet", command = self.btnNewDatasetPressed)
+        self.btnNewModel = Button(self.dsmodelPane, text = "New Model", command = self.btnNewModelPressed)
         self.btnNewDataset.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnNewModel.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
-        self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.getSample)
-        self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.getSample)
+        self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.btnSubmitSamplePressed)
+        self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.btnSubmitSamplePressed)
         self.btnDatasetStats.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnModelStats.grid(row = 1, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
