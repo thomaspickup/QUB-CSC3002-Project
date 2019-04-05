@@ -67,7 +67,7 @@ nr_test_items<-nrow(ds.test)
 nr_incorrect<-nr_test_items - nr_correct
 
 # Saves the model to file
-setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/insModel")
+setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/model")
 save(model, file = 'knn_model.rda')
 
 # Outputs the stats file

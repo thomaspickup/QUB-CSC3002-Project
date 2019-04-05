@@ -41,7 +41,7 @@ class Application(Frame):
         functions.runScript(command, printer)
 
     # DataSet Stats
-
+    
     # New DataSet
     def btnNewDatasetPressed(self):
         thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, ))
