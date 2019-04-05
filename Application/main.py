@@ -4,7 +4,7 @@ from app_modules import processSample
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
 class Application(Frame):
-    # Functions
+    # UnKnown Sample Related Functions
     def getSample(self):
         fileName = tkFileDialog.askopenfilename(initialdir = "C:\\", title = "Select Sample File", filetypes  = (("Binary Files", "*"), ("Executable Files", "*.exe"), ("DLL Files", "*.dll")))
         self.txtFilePath.delete(0, END)
@@ -18,6 +18,7 @@ class Application(Frame):
         self.btnGetSample.config(state = "disabled")
 
         # TODO: Check Cuckoo is running
+        # TODO: Check for an actual file
         R_Location = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
 
         if R_Location:
@@ -28,6 +29,15 @@ class Application(Frame):
         self.btnSubmitSample.config(state = "normal")
         self.btnGetSample.config(state = "normal")
 
+    # Model Stats
+
+    # New Model
+
+    # DataSet Stats
+
+    # New DataSet
+
+    # General Purpose Functions
     def dependancyCheckAndInstallR(self):
         R_Location = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
 
@@ -55,9 +65,21 @@ class Application(Frame):
         self.txtFilePath = Entry(self.uploadPane)
         self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.getSample)
         self.btnSubmitSample = Button(self.uploadPane, text = "Submit", command = self.submitSample)
-        self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "ew", pady = 5)
-        self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w")
-        self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e")
+        self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "ew", padx = 5 , pady = 5)
+        self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
+        self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+
+        # Sets up the Dataset Model uploadPane
+        self.dsmodelPane = LabelFrame(self.sideBarUpper, text = "DataSet / Model", padx = 5, pady = 5)
+        self.dsmodelPane.pack(padx = 10, pady = 10, fill = "both")
+        self.btnNewDataset = Button(self.dsmodelPane, text = "New DataSet", command = self.getSample)
+        self.btnNewModel = Button(self.dsmodelPane, text = "New Model", command = self.submitSample)
+        self.btnNewDataset.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
+        self.btnNewModel.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.getSample)
+        self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.getSample)
+        self.btnDatasetStats.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
+        self.btnModelStats.grid(row = 1, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
         # Sets up the Title Bar
         self.titleFrame = Frame(self)

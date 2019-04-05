@@ -8,28 +8,28 @@ def analyze(sampleLocation, printer):
     malware_file = sampleLocation
     request_headers = {"Authorization": "Bearer S4MPL3"}
 
-    # self.commandWindowDisplay.insert(END, "- Submitting Test Item")
-    #
-    # with open(malware_file, "rb") as sample:
-    #     files = {"file": ("product_submission", sample)}
-    #     this_request = server_url + r"tasks/create/file"
-    #     r = requests.post(this_request, headers=request_headers, files=files)
+    printer.insert(END, "- Submitting Test Item\n")
 
-    task_id = 3171 #r.json()["task_id"]
+    with open(malware_file, "rb") as sample:
+        files = {"file": ("product_submission", sample)}
+        this_request = server_url + r"tasks/create/file"
+        r = requests.post(this_request, headers=request_headers, files=files)
+
+    task_id = r.json()["task_id"]
 
     printer.insert(END, "- Testing of Test Item\n")
 
     this_request = server_url + r"tasks/view/" + str(task_id)
     r = requests.get(this_request)
     current_status = r.json()["task"]["status"]
-    printer.insert(END, current_status)
+    printer.insert(END, current_status + "\n")
 
 
     while current_status != "reported":
         time.sleep(5)
         r = requests.get(this_request)
         current_status = r.json()["task"]["status"]
-        printer.insert(END, current_status)
+        printer.insert(END, current_status + "\n")
 
         pass
 
