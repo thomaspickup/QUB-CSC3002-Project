@@ -31,6 +31,8 @@ class Application(Frame):
         self.btnGetSample.config(state = "normal")
 
     # Model Stats
+    def btnModelStatsPressed(self):
+        functions.printTextFile(r"application\model\accuracies.txt", self.commandWindowDisplay)
 
     # New Model
     def btnNewModelPressed(self):
@@ -41,10 +43,26 @@ class Application(Frame):
         functions.runScript(command, printer)
 
     # DataSet Stats
-    
+    def btnDatasetStatsPressed(self):
+        print("DataSet Stats Pressed")
+
     # New DataSet
     def btnNewDatasetPressed(self):
         thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, ))
+
+    # Clear Console
+    def btnClearConsolePressed(self):
+        answer = tkMessageBox.askyesno("Clear Console","Are you sure you want to clear the console?")
+
+        if answer:
+            self.commandWindowDisplay.delete("1.0", END)
+
+    # Cancel Task
+    def btnCancelTaskPressed(self):
+        answer = tkMessageBox.askyesno("Cancel Task","Are you sure you want to cancel the current task?")
+
+        if answer:
+            print("Cancel Task Pressed")
 
     # General Purpose Functions
     def dependancyCheckAndInstallR(self):
@@ -63,13 +81,9 @@ class Application(Frame):
     def createWidgets(self):
         # Sets up the SideBar
         self.sideBar = Frame(self, width=150)
-        self.sideBarUpper = Frame(self.sideBar, width=150)
-        self.sideBarLower = Frame(self.sideBar, width=150)
-        self.sideBarUpper.pack(side="top", fill="both", expand=True)
-        self.sideBarLower.pack(side="top", fill="both", expand=True)
 
         # Sets up the Upload Pane
-        self.uploadPane = LabelFrame(self.sideBarUpper, text = "Sample Upload:", padx = 5, pady = 5)
+        self.uploadPane = LabelFrame(self.sideBar, text = "Sample Upload:", padx = 5, pady = 5)
         self.uploadPane.pack(padx = 10, pady = 10, fill = "both")
         self.txtFilePath = Entry(self.uploadPane)
         self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.btnGetSamplePressed)
@@ -79,16 +93,23 @@ class Application(Frame):
         self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
         # Sets up the Dataset Model uploadPane
-        self.dsmodelPane = LabelFrame(self.sideBarUpper, text = "DataSet / Model", padx = 5, pady = 5)
+        self.dsmodelPane = LabelFrame(self.sideBar, text = "DataSet / Model", padx = 5, pady = 5)
         self.dsmodelPane.pack(padx = 10, pady = 10, fill = "both")
         self.btnNewDataset = Button(self.dsmodelPane, text = "New DataSet", command = self.btnNewDatasetPressed)
         self.btnNewModel = Button(self.dsmodelPane, text = "New Model", command = self.btnNewModelPressed)
         self.btnNewDataset.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnNewModel.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
-        self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.btnSubmitSamplePressed)
-        self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.btnSubmitSamplePressed)
+        self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.btnDatasetStatsPressed)
+        self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.btnModelStatsPressed)
         self.btnDatasetStats.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnModelStats.grid(row = 1, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+
+        self.utilitiesPane = LabelFrame(self.sideBar, text = "Utilities", padx = 5, pady = 5)
+        self.utilitiesPane.pack(padx = 10, pady = 10, fill = "both")
+        self.btnClearConsole = Button(self.utilitiesPane, text = "Clear Console", command = self.btnClearConsolePressed)
+        self.btnCancelTask = Button(self.utilitiesPane, text = "Cancel Task", command = self.btnCancelTaskPressed)
+        self.btnClearConsole.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
+        self.btnCancelTask.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
         # Sets up the Title Bar
         self.titleFrame = Frame(self)
@@ -118,8 +139,8 @@ class Application(Frame):
         self.menuBar = Menu(self)
 
         self.fileMenu = Menu(self.menuBar, tearoff = 0)
-        self.fileMenu.add_command(label = "Create New Dataset", command = self.quit)
-        self.fileMenu.add_command(label = "Create New Model", command = self.quit)
+        self.fileMenu.add_command(label = "Create New Dataset", command = self.btnNewDatasetPressed)
+        self.fileMenu.add_command(label = "Create New Model", command = self.btnNewModelPressed)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Preferences", command = self.quit)
         self.fileMenu.add_separator()

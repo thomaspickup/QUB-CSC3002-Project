@@ -24,3 +24,9 @@ def runScript(command, printer):
     exitCode = process.returncode
     if (exitCode != 0):
         raise ProcessException(command, exitCode, output)
+
+def printTextFile(fileLocation, printer):
+    with open(fileLocation, 'r') as file:
+        data = file.read()
+
+    printer.insert(END, data)
