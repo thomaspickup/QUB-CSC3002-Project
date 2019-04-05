@@ -30,6 +30,10 @@ class Application(Frame):
         self.btnSubmitSample.config(state = "normal")
         self.btnGetSample.config(state = "normal")
 
+    def btnSearchSamplePressed(self):
+        md5Hash = self.txtMD5Search.get()
+        print(md5Hash)
+
     # Model Stats
     def btnModelStatsPressed(self):
         functions.printTextFile(r"application\model\accuracies.txt", self.commandWindowDisplay)
@@ -81,6 +85,10 @@ class Application(Frame):
     def createWidgets(self):
         # Sets up the SideBar
         self.sideBar = Frame(self, width=150)
+        self.lblSideBarTitle = Label(self.sideBar, text = "Actions")
+        titleFont = ("times", 16, "bold")
+        self.lblSideBarTitle.config(font = titleFont)
+        self.lblSideBarTitle.pack()
 
         # Sets up the Upload Pane
         self.uploadPane = LabelFrame(self.sideBar, text = "Sample Upload:", padx = 5, pady = 5)
@@ -91,6 +99,13 @@ class Application(Frame):
         self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "ew", padx = 5 , pady = 5)
         self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
         self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+
+        self.searchPane = LabelFrame(self.sideBar, text = "Cuckoo Search:", padx = 5, pady = 5)
+        self.searchPane.pack(padx = 10, pady = 10, fill = "both")
+        self.txtMD5Search = Entry(self.searchPane)
+        self.btnSearchSample = Button(self.searchPane, text = "Search", command = self.btnSearchSamplePressed)
+        self.txtMD5Search.grid(row = 1, column = 0, columnspan = 4, sticky = "we", padx = 5 , pady = 5)
+        self.btnSearchSample.grid(row = 1, column = 4, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
         # Sets up the Dataset Model uploadPane
         self.dsmodelPane = LabelFrame(self.sideBar, text = "DataSet / Model", padx = 5, pady = 5)

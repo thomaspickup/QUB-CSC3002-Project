@@ -1,6 +1,6 @@
 from Tkinter import *
 from scripts import functions
-import os, time, requests, csv, subprocess
+import os, time, requests, csv, subprocess, hashlib
 
 
 def analyze(sampleLocation, printer):
@@ -8,43 +8,71 @@ def analyze(sampleLocation, printer):
     malware_file = sampleLocation
     request_headers = {"Authorization": "Bearer S4MPL3"}
 
+    # ####################################### #
+    #                                         #
+    #           Report Generation             #
+    #                                         #
+    # ####################################### #
+    # First we get the MD5 Hash of the sample and see if it already exists on cuckoo
     printer.insert(END, "- Submitting Test Item\n")
 
+    hash_md5 = hashlib.md5()
+    with open(malware_file, "rb") as f:
+      for chunk in iter(lambda: f.read(4096), b""):
+        hash_md5.update(chunk)
+    md5Hash = hash_md5.hexdigest()
+
     with open(malware_file, "rb") as sample:
-        files = {"file": ("product_submission", sample)}
-        this_request = server_url + r"tasks/create/file"
-        r = requests.post(this_request, headers=request_headers, files=files)
+        this_request = server_url + r"files/view/md5/" + md5Hash
+        r = requests.get(this_request)
+    result = r.json()
 
-    task_id = r.json()["task_id"]
+    if "sample" not in result:
+        exists = False
+    else:
+        exists = True
 
-    printer.insert(END, "- Testing of Test Item\n")
+    # If the file already exists then we continue straight into the model eval stage
+    if exists:
+        printer.insert(END, "** File Already Exists Skipping to Report Download **\n")
+        task_id = result["sample"]["id"]
+    else:
+        # Else we submit the sample and then poll on the report being completed
+        with open(malware_file, "rb") as sample:
+            files = {"file": ("product_submission", sample)}
+            this_request = server_url + r"tasks/create/file"
+            r = requests.post(this_request, headers=request_headers, files=files)
 
-    this_request = server_url + r"tasks/view/" + str(task_id)
-    r = requests.get(this_request)
-    current_status = r.json()["task"]["status"]
-    printer.insert(END, current_status + "\n")
+        task_id = r.json()["task_id"]
 
-
-    while current_status != "reported":
-        time.sleep(5)
+        printer.insert(END, "- Testing of Test Item\n")
+        this_request = server_url + r"tasks/view/" + str(task_id)
         r = requests.get(this_request)
         current_status = r.json()["task"]["status"]
         printer.insert(END, current_status + "\n")
 
-        pass
+        while current_status != "reported":
+            time.sleep(5)
+            r = requests.get(this_request)
+            current_status = r.json()["task"]["status"]
+            printer.insert(END, current_status + "\n")
 
-    printer.insert(END, "- Completed Testing of Item\n")
+            pass
+
+        printer.insert(END, "- Completed Testing of Item\n")
 
 
     printer.insert(END, "- Downloading Report\n")
-
-
     this_request = server_url + r"tasks/report/" + str(task_id)
     r = requests.get(this_request)
     report = r.json()
     printer.insert(END, "- Finished Downloading Report\n")
 
-
+    # ####################################### #
+    #                                         #
+    #         API Results Generation          #
+    #                                         #
+    # ####################################### #
     headers = ["SampleName"]
     dataset = []
 
@@ -85,7 +113,11 @@ def analyze(sampleLocation, printer):
 
     printer.insert(END, "- Exporting API Results Table\n")
 
-
+    # ####################################### #
+    #                                         #
+    #           Sample Evaluation             #
+    #                                         #
+    # ####################################### #
     # Exports table to csv file
     dataset_csv =  r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Experimental\Production\product_api.csv"
     with open(dataset_csv, "w") as dataset_file:
