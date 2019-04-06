@@ -14,21 +14,28 @@ class Application(Frame):
     def btnSubmitSamplePressed(self):
         # Gets the FileName
         fileName = self.txtFilePath.get()
-        self.txtFilePath.config(state = "disabled")
-        self.btnSubmitSample.config(state = "disabled")
-        self.btnGetSample.config(state = "disabled")
+        if fileName != "":
+            self.txtFilePath.config(state = "disabled")
+            self.btnSubmitSample.config(state = "disabled")
+            self.btnGetSample.config(state = "disabled")
 
-        # TODO: Check Cuckoo is running
-        # TODO: Check for an actual file
-        R_Location = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
+            rLocation = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
+            fileExists = os.path.isfile(fileName)
+            if not rLocation:
+                self.installR()
 
-        if R_Location:
-            thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, ))
+            if fileExists:
+                thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, ))
+            else:
+                self.commandWindowDisplay.insert(END, "**File Does Not Exist**\n")
 
-        self.txtFilePath.delete(0, END)
-        self.txtFilePath.config(state = "normal")
-        self.btnSubmitSample.config(state = "normal")
-        self.btnGetSample.config(state = "normal")
+            self.txtFilePath.delete(0, END)
+            self.txtFilePath.config(state = "normal")
+            self.btnSubmitSample.config(state = "normal")
+            self.btnGetSample.config(state = "normal")
+
+        else:
+            self.commandWindowDisplay.insert(END, "**Please enter a file or use Open File to select one**\n")
 
     def btnSearchSamplePressed(self):
         md5Hash = self.txtMD5Search.get()
@@ -36,9 +43,14 @@ class Application(Frame):
             thread.start_new_thread(cuckooSearch.search, (md5Hash, self.commandWindowDisplay, self.status, ))
         else:
             self.commandWindowDisplay.insert(END, "**Please Enter A Search Term**\n")
+
     # Model Stats
     def btnModelStatsPressed(self):
-        functions.printTextFile(r"application\model\accuracies.txt", self.commandWindowDisplay)
+        fileExists = os.path.isfile(r"model\accuracies.txt")
+        if fileExists:
+            functions.printTextFile(r"model\accuracies.txt", self.commandWindowDisplay)
+        else:
+            self.commandWindowDisplay.insert(END, "**Model Stats Doesn't Exist**\n")
 
     # New Model
     def btnNewModelPressed(self):
@@ -71,17 +83,19 @@ class Application(Frame):
             print("Cancel Task Pressed")
 
     # General Purpose Functions
+    def installR(self):
+        tkMessageBox.showwarning("R Dependancy Check", "R Is Not Installed, will now attempt to install.")
+        location = os.getcwd() + r"\dependencies\R-3.5.3-win.exe"
+        os.system(location)
+        subprocess.call([r'setx /M PATH "%PATH%;C:\Program Files\R\R-3.5.3\bin\"'])
+
     def dependancyCheckAndInstallR(self):
         R_Location = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
 
         if R_Location:
             tkMessageBox.showinfo("R Dependancy Check", "R Is Already Installed, please check the permissions on the application install folder in Program Files.")
         else:
-            tkMessageBox.showwarning("R Dependancy Check", "R Is Not Installed, will now attempt to install.")
-            location = os.getcwd() + r"\Application\dependencies\R-3.5.3-win.exe"
-            print(location)
-            os.system(location)
-            subprocess.call(['runas', '/user:Administrator', r'setx /M PATH "%PATH%;C:\Program Files\R\R-3.5.3\bin\"'])
+            self.installR()
 
     # Creates the UI
     def createWidgets(self):
@@ -169,8 +183,6 @@ class Application(Frame):
         self.menuBar.add_cascade(label = "Dependancies", menu = self.dependancyMenu)
 
     def __init__(self, master = None):
-        # TODO: Check if Cuckoo is running
-
         # Next start setting up the UI
         Frame.__init__(self, master)
         self.pack()
