@@ -2,6 +2,7 @@ from Tkinter import *
 from tkinter import ttk
 from app_modules import processSample, parserDataset, cuckooSearch
 from scripts import functions
+from windows import Preferences
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
 class Application(Frame):
@@ -81,6 +82,9 @@ class Application(Frame):
 
         if answer:
             print("Cancel Task Pressed")
+
+    def showPreferences(self):
+        Preferences.Preferences(self)
 
     # General Purpose Functions
     def installR(self):
@@ -173,7 +177,7 @@ class Application(Frame):
         self.fileMenu.add_command(label = "Create New Dataset", command = self.btnNewDatasetPressed)
         self.fileMenu.add_command(label = "Create New Model", command = self.btnNewModelPressed)
         self.fileMenu.add_separator()
-        self.fileMenu.add_command(label = "Preferences", command = self.quit)
+        self.fileMenu.add_command(label = "Preferences", command = self.showPreferences)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Quit", command = self.quit)
         self.menuBar.add_cascade(label = "File", menu = self.fileMenu)
