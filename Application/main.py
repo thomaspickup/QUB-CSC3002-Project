@@ -1,6 +1,6 @@
 from Tkinter import *
 from tkinter import ttk
-from app_modules import processSample, parserDataset
+from app_modules import processSample, parserDataset, cuckooSearch
 from scripts import functions
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
@@ -32,8 +32,10 @@ class Application(Frame):
 
     def btnSearchSamplePressed(self):
         md5Hash = self.txtMD5Search.get()
-        print(md5Hash)
-
+        if md5Hash != "":
+            thread.start_new_thread(cuckooSearch.search, (md5Hash, self.commandWindowDisplay, self.status, ))
+        else:
+            self.commandWindowDisplay.insert(END, "**Please Enter A Search Term**\n")
     # Model Stats
     def btnModelStatsPressed(self):
         functions.printTextFile(r"application\model\accuracies.txt", self.commandWindowDisplay)
@@ -96,9 +98,9 @@ class Application(Frame):
         self.txtFilePath = Entry(self.uploadPane)
         self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.btnGetSamplePressed)
         self.btnSubmitSample = Button(self.uploadPane, text = "Submit", command = self.btnSubmitSamplePressed)
-        self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "ew", padx = 5 , pady = 5)
+        self.txtFilePath.grid(row = 1, column = 0, columnspan = 6, sticky = "ew", padx = 5 , pady = 5)
         self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
-        self.btnSubmitSample.grid(row = 2, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.btnSubmitSample.grid(row = 2, column = 4, columnspan = 2, sticky = "e", padx = 5, pady = 5)
 
         self.searchPane = LabelFrame(self.sideBar, text = "Cuckoo Search:", padx = 5, pady = 5)
         self.searchPane.pack(padx = 10, pady = 10, fill = "both")
@@ -141,7 +143,7 @@ class Application(Frame):
 
         # status bar
         self.statusFrame = Frame(self)
-        self.status = Label(self.statusFrame, text="Waiting...")
+        self.status = Label(self.statusFrame, text="Waiting for Command...")
         self.status.pack(fill="both", expand=True)
 
         # Define Grid for different sections

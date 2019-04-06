@@ -2,7 +2,6 @@ from Tkinter import *
 from scripts import functions
 import os, time, requests, csv, subprocess, hashlib
 
-
 def analyze(sampleLocation, printer):
     server_url = "http://localhost:8090/"
     malware_file = sampleLocation
