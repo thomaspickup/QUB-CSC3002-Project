@@ -1,9 +1,39 @@
 from Tkinter import *
 from tkinter import ttk
+from app_modules import configuration
+import urllib2, ConfigParser
 
 class Preferences():
+    def btnSaveLocationsPressed(self):
+        cuckoo_server = self.txtCuckoo.get()
+        sample_directory = self.txtSampleDirectory.get()
+        dataset_directory = self.txtDataSetDirectory.get()
+        model_directory = self.txtModelDirectory.get()
+        cuckoo_export_directory = self.txtCuckooExportDirectory.get()
+        reports_directory = self.txtReportsDirectory.get()
+
+        config = ConfigParser.RawConfigParser()
+
+        config.read('config.ini')
+
+        config.set('locations', 'cuckoo_server', cuckoo_server)
+        config.set('locations', 'sample_directory', sample_directory)
+        config.set('locations', 'dataset_directory', dataset_directory)
+        config.set('locations', 'model_directory', model_directory)
+        config.set('locations', 'cuckoo_export_directory', cuckoo_export_directory)
+        config.set('locations', 'reports_directory', reports_directory)
+
+        with open('config.ini', 'w') as config_file:
+            config.write(config_file)
+
+        self.preferencesWindow.destroy()
+
+    def btnCuckooConnectPressed(self):
+        response = urllib2.urlopen(self.txtCuckoo.get() + "/cuckoo/status");
+        print(response.read())
+
     def verifyLocations(self):
-        print("verify")
+        print(configuration.MODEL_DIRECTORY)
 
     def createWidgets(self):
         self.titleFrame = Frame(self.preferencesWindow)
@@ -21,14 +51,17 @@ class Preferences():
         self.lblCuckoo = Label(self.locationsGroup, text = "Cuckoo Server", anchor = "w")
         self.lblCuckoo.grid(row = 0, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtCuckoo = Entry(self.locationsGroup)
+        self.txtCuckoo.insert(0, configuration.CUCKOO_SERVER)
         self.txtCuckoo.grid(row = 0, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
-        self.btnCuckooOpenFolder = Button(self.locationsGroup, text = "Connect")
-        self.btnCuckooOpenFolder.grid(row = 0, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
+
+        self.btnCuckooConnect = Button(self.locationsGroup, text = "Connect", command = self.btnCuckooConnectPressed)
+        self.btnCuckooConnect.grid(row = 0, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
         self.lblSampleDirectory = Label(self.locationsGroup, text = "Sample Directory", anchor = "w")
         self.lblSampleDirectory.grid(row = 1, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtSampleDirectory = Entry(self.locationsGroup)
         self.txtSampleDirectory.grid(row = 1, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
+        self.txtSampleDirectory.insert(0, configuration.SAMPLE_DIRECTORY)
         self.btnSampleDirectoryOpenFolder = Button(self.locationsGroup, text = "Open")
         self.btnSampleDirectoryOpenFolder.grid(row = 1, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
@@ -36,6 +69,7 @@ class Preferences():
         self.lblDataSetDirectory.grid(row = 2, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtDataSetDirectory = Entry(self.locationsGroup)
         self.txtDataSetDirectory.grid(row = 2, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
+        self.txtDataSetDirectory.insert(0, configuration.DATASET_DIRECTORY)
         self.btnDataSetDirectoryOpenFolder = Button(self.locationsGroup, text = "Open")
         self.btnDataSetDirectoryOpenFolder.grid(row = 2, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
@@ -43,6 +77,7 @@ class Preferences():
         self.lblModelDirectory.grid(row = 3, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtModelDirectory = Entry(self.locationsGroup)
         self.txtModelDirectory.grid(row = 3, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
+        self.txtModelDirectory.insert(0, configuration.MODEL_DIRECTORY)
         self.btnModelDirectoryOpenFolder = Button(self.locationsGroup, text = "Open")
         self.btnModelDirectoryOpenFolder.grid(row = 3, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
@@ -50,6 +85,7 @@ class Preferences():
         self.lblCuckooExportDirectory.grid(row = 4, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtCuckooExportDirectory = Entry(self.locationsGroup)
         self.txtCuckooExportDirectory.grid(row = 4, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
+        self.txtCuckooExportDirectory.insert(0, configuration.CUCKOO_EXPORT_DIRECTORY)
         self.btnCuckooExportDirectoryOpenFolder = Button(self.locationsGroup, text = "Open")
         self.btnCuckooExportDirectoryOpenFolder.grid(row = 4, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
@@ -57,11 +93,12 @@ class Preferences():
         self.lblReportsDirectory.grid(row = 5, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
         self.txtReportsDirectory = Entry(self.locationsGroup)
         self.txtReportsDirectory.grid(row = 5, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
-        self.btnReportsOpenFolder = Button(self.locationsGroup, text = "Open")
+        self.txtReportsDirectory.insert(0, configuration.REPORTS_DIRECTORY)
+        self.btnReportsOpenFolder = Button(self.locationsGroup, text = "Open", command = self.verifyLocations)
         self.btnReportsOpenFolder.grid(row = 5, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 
-        self.btnVerify = Button(self.locationsGroup, text = "Save", command = self.verifyLocations)
-        self.btnVerify.grid(row = 10, column = 6, sticky = "nesw", columnspan = 1, pady = (0, 5), padx = 5)
+        self.btnSaveLocations = Button(self.locationsGroup, text = "Save", command = self.btnSaveLocationsPressed)
+        self.btnSaveLocations.grid(row = 10, column = 6, sticky = "nesw", columnspan = 1, pady = (0, 5), padx = 5)
 
     def __init__(self, master = None):
         self.preferencesWindow = Toplevel(master)
@@ -70,3 +107,4 @@ class Preferences():
         self.preferencesWindow.resizable(width = False, height = False)
         self.preferencesWindow.grid_rowconfigure(1, weight=1)
         self.preferencesWindow.grid_columnconfigure(1, weight=1)
+        self.preferencesWindow.transient(master)
