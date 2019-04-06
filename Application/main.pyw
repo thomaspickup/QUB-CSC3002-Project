@@ -25,7 +25,7 @@ class Application(Frame):
                 self.installR()
 
             if fileExists:
-                thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, ))
+                thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, self.status))
             else:
                 self.commandWindowDisplay.insert(END, "**File Does Not Exist**\n")
 

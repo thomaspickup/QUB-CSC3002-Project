@@ -2,7 +2,8 @@ from Tkinter import *
 from scripts import functions
 import os, time, requests, csv, subprocess, hashlib
 
-def analyze(sampleLocation, printer):
+def analyze(sampleLocation, printer, statusbar):
+    statusbar.config(text = "Running Command: Process Sample")
     server_url = "http://localhost:8090/"
     malware_file = sampleLocation
     request_headers = {"Authorization": "Bearer S4MPL3"}
@@ -126,3 +127,4 @@ def analyze(sampleLocation, printer):
     functions.runScript(command, printer)
 
     printer.insert(END, "- Finished\n")
+    statusbar.config(text = "Waiting for Command...")
