@@ -66,7 +66,7 @@ class Application(Frame):
 
     # New DataSet
     def btnNewDatasetPressed(self):
-        thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, ))
+        thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, ))
 
     # Clear Console
     def btnClearConsolePressed(self):
