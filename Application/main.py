@@ -1,6 +1,6 @@
 from Tkinter import *
 from tkinter import ttk
-from app_modules import processSample, parserDataset, cuckooSearch
+from app_modules import processSample, parserDataset, cuckooSearch, configuration
 from scripts import functions
 from windows import Preferences
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
@@ -47,9 +47,9 @@ class Application(Frame):
 
     # Model Stats
     def btnModelStatsPressed(self):
-        fileExists = os.path.isfile(r"model\accuracies.txt")
+        fileExists = os.path.isfile(configuration.MODEL_DIRECTORY + r"\accuracies.txt")
         if fileExists:
-            functions.printTextFile(r"model\accuracies.txt", self.commandWindowDisplay)
+            functions.printTextFile(configuration.MODEL_DIRECTORY + r"\accuracies.txt", self.commandWindowDisplay)
         else:
             self.commandWindowDisplay.insert(END, "**Model Stats Doesn't Exist**\n")
 
@@ -58,7 +58,7 @@ class Application(Frame):
         thread.start_new_thread(self.newModel, (self.commandWindowDisplay, ))
 
     def newModel(self, printer):
-        command = ["rscript", r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Application\mlcore\Model_Creation_Script.R"]
+        command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R"]
         functions.runScript(command, printer)
 
     # DataSet Stats
