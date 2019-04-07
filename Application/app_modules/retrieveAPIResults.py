@@ -1,18 +1,12 @@
 from Tkinter import *
 from shutil import copyfile
+import configuration
 import os, sys
 
 def retrieve(printer):
     # The directory that the exports from the cuckoo environment are stored
-    raw_directory = ''
-    report_directory = ''
-
-    if len(sys.argv) == 3:
-        raw_directory = sys.argv[1]
-        report_directory = sys.argv[2]
-    else:
-        raw_directory = r"m:\\"
-        report_directory = r"r:\\"
+    raw_directory = configuration.CUCKOO_EXPORT_DIRECTORY
+    report_directory = configuration.REPORTS_DIRECTORY
 
     printer.insert(END, "- Starting Copying of Reports\n")
     count = 0

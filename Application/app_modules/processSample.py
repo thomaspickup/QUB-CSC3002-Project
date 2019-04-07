@@ -1,10 +1,15 @@
 from Tkinter import *
 from scripts import functions
-import os, time, requests, csv, subprocess, hashlib
+import os, time, requests, csv, subprocess, hashlib, configuration
 
 def analyze(sampleLocation, printer, statusbar):
     statusbar.config(text = "Running Command: Process Sample")
-    server_url = "http://localhost:8090/"
+
+    # Concat the server url from the host and port
+    server_url = configuration.CUCKOO_SERVER
+    server_port = configuration.CUCKOO_SERVER_PORT
+    server =  r"http://" + server_url + r":" + server_port + r"/"
+
     malware_file = sampleLocation
     request_headers = {"Authorization": "Bearer S4MPL3"}
 
@@ -23,7 +28,7 @@ def analyze(sampleLocation, printer, statusbar):
     md5Hash = hash_md5.hexdigest()
 
     with open(malware_file, "rb") as sample:
-        this_request = server_url + r"files/view/md5/" + md5Hash
+        this_request = server + r"files/view/md5/" + md5Hash
         r = requests.get(this_request)
     result = r.json()
 
@@ -40,13 +45,13 @@ def analyze(sampleLocation, printer, statusbar):
         # Else we submit the sample and then poll on the report being completed
         with open(malware_file, "rb") as sample:
             files = {"file": ("product_submission", sample)}
-            this_request = server_url + r"tasks/create/file"
+            this_request = server + r"tasks/create/file"
             r = requests.post(this_request, headers=request_headers, files=files)
 
         task_id = r.json()["task_id"]
 
         printer.insert(END, "- Testing of Test Item\n")
-        this_request = server_url + r"tasks/view/" + str(task_id)
+        this_request = server + r"tasks/view/" + str(task_id)
         r = requests.get(this_request)
         current_status = r.json()["task"]["status"]
         printer.insert(END, current_status + "\n")
@@ -63,7 +68,7 @@ def analyze(sampleLocation, printer, statusbar):
 
 
     printer.insert(END, "- Downloading Report\n")
-    this_request = server_url + r"tasks/report/" + str(task_id)
+    this_request = server + r"tasks/report/" + str(task_id)
     r = requests.get(this_request)
     report = r.json()
     printer.insert(END, "- Finished Downloading Report\n")
@@ -76,7 +81,7 @@ def analyze(sampleLocation, printer, statusbar):
     headers = ["SampleName"]
     dataset = []
 
-    with open(r'C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Experimental\Model\api_headers.csv') as csv_file:
+    with open(configuration.MODEL_DIRECTORY + r'\api_headers.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             api_names = row
@@ -119,11 +124,11 @@ def analyze(sampleLocation, printer, statusbar):
     #                                         #
     # ####################################### #
     # Exports table to csv file
-    dataset_csv =  r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Experimental\Production\product_api.csv"
+    dataset_csv =  os.getcwd() + r"\tmp\product_api.csv"
     with open(dataset_csv, "w") as dataset_file:
         writer = csv.writer(dataset_file, lineterminator='\n')
         writer.writerows(dataset)
-    command = ["rscript", r"C:\Users\thomaspickup\iCloudDrive\Documents\University\CSC3002\Assignment\CSC3002-Project\Application\mlcore\Product_Script.R"]
+    command = ["rscript", os.getcwd() + r"\mlcore\Product_Script.R"]
     functions.runScript(command, printer)
 
     printer.insert(END, "- Finished\n")

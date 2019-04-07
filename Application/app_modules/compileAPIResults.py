@@ -1,5 +1,5 @@
 from Tkinter import *
-import json, os, csv, sys
+import json, os, csv, sys, configuration
 
 def getJSON(filepath):
     with open(filepath) as file:
@@ -9,16 +9,9 @@ def getJSON(filepath):
 
 def compile(printer):
     # The directory that the malware reports are stored in
-    report_directory = ''
-    dataset_directory = ''
+    report_directory = configuration.REPORTS_DIRECTORY
+    dataset_directory = configuration.DATASET_DIRECTORY
     threshold_score = 0.2
-
-    if len(sys.argv) == 3:
-        report_directory = sys.argv[1]
-        dataset_directory = sys.argv[2]
-    else:
-        report_directory = r"R:\\"
-        dataset_directory = r'C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\csc3002-project\\application\\dataset'
 
     # Sets up the python lists
     dataset = []

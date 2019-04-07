@@ -5,7 +5,8 @@ import urllib2, ConfigParser
 
 class Preferences():
     def btnSaveLocationsPressed(self):
-        cuckoo_server = self.txtCuckoo.get()
+        cuckoo_server = self.txtCuckooServer.get()
+        cuckoo_server_port = self.txtCuckooServerPort.get()
         sample_directory = self.txtSampleDirectory.get()
         dataset_directory = self.txtDataSetDirectory.get()
         model_directory = self.txtModelDirectory.get()
@@ -17,6 +18,7 @@ class Preferences():
         config.read('config.ini')
 
         config.set('locations', 'cuckoo_server', cuckoo_server)
+        config.set('locations', 'cuckoo_server_port', cuckoo_server_port)
         config.set('locations', 'sample_directory', sample_directory)
         config.set('locations', 'dataset_directory', dataset_directory)
         config.set('locations', 'model_directory', model_directory)
@@ -27,11 +29,15 @@ class Preferences():
             config.write(config_file)
 
         configuration.reloadConfig()
-        
+
         self.preferencesWindow.destroy()
 
     def btnCuckooConnectPressed(self):
-        response = urllib2.urlopen(self.txtCuckoo.get() + "/cuckoo/status");
+        server_url = self.txtCuckooServer.get()
+        server_port = self.txtCuckooServerPort.get()
+        server =  r"http://" + server_url + r":" + server_port + r"/"
+
+        response = urllib2.urlopen(server + "cuckoo/status");
         print(response.read())
 
     def verifyLocations(self):
@@ -52,10 +58,12 @@ class Preferences():
 
         self.lblCuckoo = Label(self.locationsGroup, text = "Cuckoo Server", anchor = "w")
         self.lblCuckoo.grid(row = 0, column = 0, columnspan = 1, sticky = "nesw", pady = 5, padx = 5)
-        self.txtCuckoo = Entry(self.locationsGroup)
-        self.txtCuckoo.insert(0, configuration.CUCKOO_SERVER)
-        self.txtCuckoo.grid(row = 0, column = 1, columnspan = 5, sticky = "nesw", pady = (0, 5), padx = 5)
-
+        self.txtCuckooServer = Entry(self.locationsGroup)
+        self.txtCuckooServer.insert(0, configuration.CUCKOO_SERVER)
+        self.txtCuckooServer.grid(row = 0, column = 1, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
+        self.txtCuckooServerPort = Entry(self.locationsGroup)
+        self.txtCuckooServerPort.insert(0, configuration.CUCKOO_SERVER_PORT)
+        self.txtCuckooServerPort.grid(row = 0, column = 2, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
         self.btnCuckooConnect = Button(self.locationsGroup, text = "Connect", command = self.btnCuckooConnectPressed)
         self.btnCuckooConnect.grid(row = 0, column = 6, columnspan = 1, sticky = "nesw", pady = (0, 5), padx = 5)
 

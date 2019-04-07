@@ -1,10 +1,15 @@
 from Tkinter import *
 from scripts import functions
-import os, time, requests, csv, subprocess, hashlib
+import os, time, requests, csv, subprocess, hashlib, configuration
 
 def search(input, printer, statusbar):
     statusbar.config(text = "Running Command: Cuckoo Search")
-    server_url = "http://localhost:8090/"
+
+    # Concat the server url from the host and port
+    server_url = configuration.CUCKOO_SERVER
+    server_port = configuration.CUCKOO_SERVER_PORT
+    server =  r"http://" + server_url + r":" + server_port + r"/"
+
     request_headers = {"Authorization": "Bearer S4MPL3"}
     error = False
 
@@ -20,7 +25,7 @@ def search(input, printer, statusbar):
     printer.insert(END, "== Results ==\n")
 
     if isInputDigit:
-        this_request = server_url + r"tasks/view/" + input
+        this_request = server + r"tasks/view/" + input
         md5Check = requests.get(this_request)
 
         if "task" in md5Check.json():
@@ -36,7 +41,7 @@ def search(input, printer, statusbar):
         else:
             error = True
     else:
-        this_request = server_url + r"files/view/md5/" + input
+        this_request = server + r"files/view/md5/" + input
         idCheck = requests.get(this_request)
 
         if "sample" in idCheck.json():

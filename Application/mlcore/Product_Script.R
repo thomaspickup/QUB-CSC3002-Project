@@ -1,5 +1,5 @@
 # Sets working directory to dataset location
-setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Experimental/Production")
+setwd("C:/Users/thomaspickup/iCloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/tmp")
 
 cat("- Importing Libraries\n")
 library(caret)
@@ -14,13 +14,13 @@ predict_this<-read.csv("product_api.csv")
 # Nullifies any identifying data
 predict_this$SampleName<-NULL
 
-setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Experimental/Model")
+setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/Model")
 load("knn_model.rda")
 
 cat("- Evaluating Model with sample passed\n")
 predictions<-predict(object=model,predict_this)
 
-setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Experimental/DataSet")
+setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/DataSet")
 malware_types<-read.csv("malware_types.csv")
 
 prediction_text = levels(malware_types[, 2])[predictions]

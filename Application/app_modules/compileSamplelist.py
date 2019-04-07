@@ -1,16 +1,9 @@
 from Tkinter import *
-import sys, os, csv, hashlib
+import sys, os, csv, hashlib, configuration
 
 def compile(printer):
-    sample_directory = ""
-    output_directory = ""
-
-    if len(sys.argv) == 3:
-        sample_directory = sys.argv[1]
-        output_directory = sys.argv[2]
-    else:
-        sample_directory = r"C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\samples\\"
-        output_directory = r"C:\\Users\\thomaspickup\\iCloudDrive\\Documents\\University\\CSC3002\\Assignment\\csc3002-project\\Application\\dataset\\"
+    sample_directory = configuration.SAMPLE_DIRECTORY
+    output_directory = configuration.DATASET_DIRECTORY
 
     file_names = ['malware_types.csv', 'sample_list.csv']
 
