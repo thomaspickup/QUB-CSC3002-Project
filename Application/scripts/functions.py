@@ -1,5 +1,5 @@
 from Tkinter import *
-import subprocess
+import subprocess, requests
 
 # This functions purpose is to run a script using the subprocess command and return the output of the script to a printer (Tkinter output)
 def runScript(command, printer):
@@ -30,3 +30,19 @@ def printTextFile(fileLocation, printer):
         data = file.read()
 
     printer.insert(END, data)
+
+def checkCuckooOnline(cuckoo_host, cuckoo_port):
+    server_url = cuckoo_host
+    server_port = cuckoo_port
+    server =  r"http://" + server_url + r":" + server_port + r"/"
+
+    cuckooOnline = True
+
+    try:
+        response = requests.get(server + "cuckoo/status");
+        if response.status_code != requests.codes.ok:
+            cuckooOnline = False
+    except requests.exceptions.RequestException as e:
+        cuckooOnline = False
+
+    return cuckooOnline

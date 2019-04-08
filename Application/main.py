@@ -3,15 +3,16 @@ from tkinter import ttk
 from app_modules import processSample, parserDataset, cuckooSearch, configuration
 from scripts import functions
 from windows import Preferences
-import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
+import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread, socket
 
 class Application(Frame):
-    # UnKnown Sample Related Functions
+    # Open Sample Pressed
     def btnGetSamplePressed(self):
         fileName = tkFileDialog.askopenfilename(initialdir = "C:\\", title = "Select Sample File", filetypes  = (("Binary Files", "*"), ("Executable Files", "*.exe"), ("DLL Files", "*.dll")))
         self.txtFilePath.delete(0, END)
         self.txtFilePath.insert(0, fileName)
 
+    # Submit sample pressed
     def btnSubmitSamplePressed(self):
         # Gets the FileName
         fileName = self.txtFilePath.get()
@@ -26,7 +27,10 @@ class Application(Frame):
                 self.installR()
 
             if fileExists:
-                thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, self.status))
+                if self.checkCuckooStatus():
+                    thread.start_new_thread(processSample.analyze,(fileName, self.commandWindowDisplay, self.status))
+                else:
+                    self.commandWindowDisplay.insert(END, "**Cuckoo Not Running, please check settings and try again**\n")
             else:
                 self.commandWindowDisplay.insert(END, "**File Does Not Exist**\n")
 
@@ -38,10 +42,14 @@ class Application(Frame):
         else:
             self.commandWindowDisplay.insert(END, "**Please enter a file or use Open File to select one**\n")
 
+    # Search Pressed
     def btnSearchSamplePressed(self):
         md5Hash = self.txtMD5Search.get()
         if md5Hash != "":
-            thread.start_new_thread(cuckooSearch.search, (md5Hash, self.commandWindowDisplay, self.status, ))
+            if self.checkCuckooStatus():
+                thread.start_new_thread(cuckooSearch.search, (md5Hash, self.commandWindowDisplay, self.status, ))
+            else:
+                self.commandWindowDisplay.insert(END, "**Cuckoo Not Running, please check settings and try again**\n")
         else:
             self.commandWindowDisplay.insert(END, "**Please Enter A Search Term**\n")
 
@@ -57,6 +65,7 @@ class Application(Frame):
     def btnNewModelPressed(self):
         thread.start_new_thread(self.newModel, (self.commandWindowDisplay, ))
 
+    # New Model Function
     def newModel(self, printer):
         command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R"]
         functions.runScript(command, printer)
@@ -67,7 +76,10 @@ class Application(Frame):
 
     # New DataSet
     def btnNewDatasetPressed(self):
-        thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, ))
+        if self.checkCuckooStatus():
+            thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, ))
+        else:
+            self.commandWindowDisplay.insert(END, "**Cuckoo Not Running, please check settings and try again**\n")
 
     # Clear Console
     def btnClearConsolePressed(self):
@@ -83,16 +95,28 @@ class Application(Frame):
         if answer:
             print("Cancel Task Pressed")
 
+    # Show Preferences Pane
     def showPreferences(self):
         Preferences.Preferences(self)
 
-    # General Purpose Functions
+    # Install R
     def installR(self):
         tkMessageBox.showwarning("R Dependancy Check", "R Is Not Installed, will now attempt to install.")
         location = os.getcwd() + r"\dependencies\R-3.5.3-win.exe"
         os.system(location)
         subprocess.call([r'setx /M PATH "%PATH%;C:\Program Files\R\R-3.5.3\bin\"'])
 
+    # Checks cuckoo status
+    def checkCuckooStatus(self):
+        isCuckooOnline = functions.checkCuckooOnline(configuration.CUCKOO_SERVER, configuration.CUCKOO_SERVER_PORT)
+
+        return isCuckooOnline
+
+    # Attempts to launch cuckoo
+    def attemptToLaunchCuckoo(self):
+        subprocess.call(["python", os.getcwd() + r"\scripts\cuckoo_run.pyw"])
+
+    # Dependancy check for r
     def dependancyCheckAndInstallR(self):
         R_Location = os.path.isfile(configuration.R_LOCATION + r'\RScript.exe')
 
@@ -100,6 +124,21 @@ class Application(Frame):
             tkMessageBox.showinfo("R Dependancy Check", "R Is Already Installed, please check the permissions on the application install folder in Program Files.")
         else:
             self.installR()
+
+    # Dependancy check for cuckoo
+    def dependancyCheckAndLaunchCuckoo(self):
+        cuckooOnline = self.checkCuckooStatus()
+
+        # Now loaded display error message if cuckoo not online
+        if not cuckooOnline:
+            if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
+                answer = tkMessageBox.askyesno("Cuckoo Offline", "The configured Cuckoo Server didn't respond, as the server appears to be on this machine, do you want us to try and launch it?")
+
+                if answer:
+                    # Try to launch using scripts cuckoo_run.pyw
+                    self.attemptToLaunchCuckoo()
+            else:
+                tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server didn't respond, please check it is online and preferences.")
 
     # Creates the UI
     def createWidgets(self):
@@ -184,15 +223,21 @@ class Application(Frame):
 
         self.dependancyMenu = Menu(self.menuBar, tearoff = 0)
         self.dependancyMenu.add_command(label = "R 3.5.3", command = self.dependancyCheckAndInstallR)
-        self.menuBar.add_cascade(label = "Dependancies", menu = self.dependancyMenu)
+
+        if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
+            self.dependancyMenu.add_command(label = "Reload Cuckoo", command = self.dependancyCheckAndLaunchCuckoo)
+
+        self.menuBar.add_cascade(label = "Dependencies", menu = self.dependancyMenu)
 
     def __init__(self, master = None):
-        # Check if cuckoo server is active
-
         # Next start setting up the UI
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
+
+        # Check if cukoo is installed
+        self.dependancyCheckAndLaunchCuckoo()
+
 
 root = Tk()
 app = Application(master = root)
