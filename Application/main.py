@@ -20,7 +20,7 @@ class Application(Frame):
             self.btnSubmitSample.config(state = "disabled")
             self.btnGetSample.config(state = "disabled")
 
-            rLocation = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
+            rLocation = os.path.isfile(configuration.R_LOCATION + r'\RScript.exe')
             fileExists = os.path.isfile(fileName)
             if not rLocation:
                 self.installR()
@@ -94,7 +94,7 @@ class Application(Frame):
         subprocess.call([r'setx /M PATH "%PATH%;C:\Program Files\R\R-3.5.3\bin\"'])
 
     def dependancyCheckAndInstallR(self):
-        R_Location = os.path.isfile(r'C:\Program Files\R\R-3.5.3\bin\RScript.exe')
+        R_Location = os.path.isfile(configuration.R_LOCATION + r'\RScript.exe')
 
         if R_Location:
             tkMessageBox.showinfo("R Dependancy Check", "R Is Already Installed, please check the permissions on the application install folder in Program Files.")
@@ -187,6 +187,8 @@ class Application(Frame):
         self.menuBar.add_cascade(label = "Dependancies", menu = self.dependancyMenu)
 
     def __init__(self, master = None):
+        # Check if cuckoo server is active
+
         # Next start setting up the UI
         Frame.__init__(self, master)
         self.pack()

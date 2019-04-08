@@ -28,7 +28,7 @@ class Preferences():
         with open('config.ini', 'w') as config_file:
             config.write(config_file)
 
-        configuration.reloadConfig()
+        reload(configuration)
 
         self.preferencesWindow.destroy()
 
