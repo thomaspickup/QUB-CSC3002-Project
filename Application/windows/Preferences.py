@@ -1,7 +1,7 @@
 from Tkinter import *
 from tkinter import ttk
 from app_modules import configuration
-import urllib2, ConfigParser
+import ConfigParser
 
 class Preferences():
     def btnSaveLocationsPressed(self):
@@ -33,12 +33,7 @@ class Preferences():
         self.preferencesWindow.destroy()
 
     def btnCuckooConnectPressed(self):
-        server_url = self.txtCuckooServer.get()
-        server_port = self.txtCuckooServerPort.get()
-        server =  r"http://" + server_url + r":" + server_port + r"/"
-
-        response = urllib2.urlopen(server + "cuckoo/status");
-        print(response.read())
+        print("BTN CUCKOO CONNECT PRESSED")
 
     def verifyLocations(self):
         print(configuration.MODEL_DIRECTORY)
