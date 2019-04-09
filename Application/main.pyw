@@ -3,7 +3,8 @@ from tkinter import ttk
 from app_modules import processSample, parserDataset, cuckooSearch, configuration
 from scripts import functions
 from windows import Preferences, modelTable
-import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread, socket
+from socket import gethostbyname, gaierror
+import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
 class Application(Frame):
     # Open Sample Pressed
@@ -127,14 +128,18 @@ class Application(Frame):
 
         # Now loaded display error message if cuckoo not online
         if not cuckooOnline:
-            if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
-                answer = tkMessageBox.askyesno("Cuckoo Offline", "The configured Cuckoo Server didn't respond, as the server appears to be on this machine, do you want us to try and launch it?")
+            try:
+                if gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
+                    answer = tkMessageBox.askyesno("Cuckoo Offline", "The configured Cuckoo Server didn't respond, as the server appears to be on this machine, do you want us to try and launch it?")
 
-                if answer:
-                    # Try to launch using scripts cuckoo_run.pyw
-                    self.attemptToLaunchCuckoo()
-            else:
-                tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server didn't respond, please check it is online and preferences.")
+                    if answer:
+                        # Try to launch using scripts cuckoo_run.pyw
+                        self.attemptToLaunchCuckoo()
+                else:
+                    tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server didn't respond, please check it is online and preferences.")
+            except gaierror:
+                tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server could not be resolved and didn't respond, please check it is online and preferences.")
+
 
     # Creates the UI
     def createWidgets(self):
@@ -215,8 +220,12 @@ class Application(Frame):
         self.fileMenu.add_command(label = "Preferences", command = self.showPreferences)
         self.dependancyMenu = Menu(self.menuBar, tearoff = 0)
         self.dependancyMenu.add_command(label = "R 3.5.3", command = self.dependancyCheckAndInstallR)
-        if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
-            self.dependancyMenu.add_command(label = "Reload Cuckoo", command = self.dependancyCheckAndLaunchCuckoo)
+        try:
+            if gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
+                self.dependancyMenu.add_command(label = "Reload Cuckoo", command = self.dependancyCheckAndLaunchCuckoo)
+        except gaierror:
+            # No further processing needed as the hostname could not be resolved so we know its not local
+            pass
         self.fileMenu.add_cascade(label = "Dependencies", menu = self.dependancyMenu)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Quit", command = self.quit)
