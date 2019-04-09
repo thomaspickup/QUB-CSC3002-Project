@@ -2,7 +2,7 @@ from Tkinter import *
 from tkinter import ttk
 from app_modules import processSample, parserDataset, cuckooSearch, configuration
 from scripts import functions
-from windows import Preferences, modelTable
+from windows import Preferences, modelTable, newDataset
 from socket import gethostbyname, gaierror
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
@@ -15,6 +15,8 @@ class Application(Frame):
 
     # Submit sample pressed
     def btnSubmitSamplePressed(self):
+        self.commandWindowDisplay.insert(END, "== Process Sample ==\n")
+
         # Gets the FileName
         fileName = self.txtFilePath.get()
         if fileName != "":
@@ -64,8 +66,11 @@ class Application(Frame):
 
     # New Model Function
     def newModel(self, printer):
+        self.commandWindowDisplay.insert(END, "== New Model ==\n")
+        self.status.config(text = "Running Command: New Model")
         command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R"]
         functions.runScript(command, printer)
+        self.status.config(text = "Waiting for Command...")
 
     # DataSet Stats
     def btnDatasetStatsPressed(self):
@@ -73,8 +78,16 @@ class Application(Frame):
 
     # New DataSet
     def btnNewDatasetPressed(self):
+        self.sampleChecked = 0
+        self.datasetChecked = 0
+        self.retrieveChecked = 0
+
+        datasetScreen = newDataset.newDataset(self)
+    
+    def newDataset(self):
+        self.commandWindowDisplay.insert(END, "== New Dataset ==\n")
         if self.checkCuckooStatus():
-            thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, ))
+            thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, self.retrieveChecked, self.sampleChecked, self.datasetChecked ))
         else:
             self.commandWindowDisplay.insert(END, "**Cuckoo Not Running, please check settings and try again**\n")
 
@@ -139,7 +152,6 @@ class Application(Frame):
                     tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server didn't respond, please check it is online and preferences.")
             except gaierror:
                 tkMessageBox.showinfo("Cuckoo Offline", "The configured Cuckoo Server could not be resolved and didn't respond, please check it is online and preferences.")
-
 
     # Creates the UI
     def createWidgets(self):
