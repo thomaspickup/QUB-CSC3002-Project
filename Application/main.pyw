@@ -68,7 +68,7 @@ class Application(Frame):
     def newModel(self, printer):
         self.commandWindowDisplay.insert(END, "== New Model ==\n")
         self.status.config(text = "Running Command: New Model")
-        command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R"]
+        command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R", configuration.DATASET_DIRECTORY, configuration.MODEL_DIRECTORY, configuration.RUN_BORUTA, configuration.RUN_CROSSVALIDATION, configuration.NUMBER_OF_FOLDS]
         functions.runScript(command, printer)
         self.status.config(text = "Waiting for Command...")
 
@@ -83,7 +83,7 @@ class Application(Frame):
         self.retrieveChecked = 0
 
         datasetScreen = newDataset.newDataset(self)
-    
+
     def newDataset(self):
         self.commandWindowDisplay.insert(END, "== New Dataset ==\n")
         if self.checkCuckooStatus():
@@ -209,7 +209,11 @@ class Application(Frame):
         self.mainContent = Frame(self)
         self.mainContent.grid(row=1, column=1)
         self.commandWindowDisplay = Text(self.mainContent)
-        self.commandWindowDisplay.grid(row = 4, column = 0, columnspan = 5, rowspan = 3, sticky = "nesw")
+        self.commandWindowDisplay.grid(row = 0, column = 0, sticky = "nesw")
+
+        self.scrollbar = Scrollbar(self.mainContent, command = self.commandWindowDisplay.yview)
+        self.scrollbar.grid(row = 0, column = 1, sticky = "nesw", padx = (0, 5))
+        self.commandWindowDisplay['yscrollcommand'] = self.scrollbar.set
 
         # status bar
         self.statusFrame = Frame(self)

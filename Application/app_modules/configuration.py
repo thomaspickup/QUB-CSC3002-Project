@@ -51,13 +51,13 @@ def writeConfig():
     with open('config.ini', 'w') as config_file:
         config.write(config_file)
 
-expected_sections = ['locations', 'program']
+expected_sections = ['locations', 'machinelearning', 'program']
 expected_settings = [['cuckoo_server', 'cuckoo_server_port', 'sample_directory',
 'dataset_directory', 'model_directory', 'cuckoo_export_directory',
-'reports_directory'], ['r_location']]
+'reports_directory'], ['run_boruta', 'run_crossvalidation', 'number_of_folds'], ['r_location']]
 default_values = [['localhost', '8090', r'C:\Sample',
 r'C:\Dataset', r'C:\Model', r'C:\Cuckoo\Storage\Analyses',
-r'C:\Reports'], [r'C:\Program Files\R\R-3.5.3\bin']]
+r'C:\Reports'], ['1', '1', '10'], [r'C:\Program Files\R\R-3.5.3\bin']]
 
 # First Check if config.ini actually exists
 configExists = os.path.isfile('config.ini')
@@ -78,4 +78,7 @@ DATASET_DIRECTORY = config.get('locations', 'dataset_directory')
 MODEL_DIRECTORY = config.get('locations', 'model_directory')
 CUCKOO_EXPORT_DIRECTORY = config.get('locations', 'cuckoo_export_directory')
 REPORTS_DIRECTORY = config.get('locations', 'reports_directory')
+RUN_BORUTA = config.get('machinelearning', 'run_boruta')
+RUN_CROSSVALIDATION = config.get('machinelearning', 'run_crossvalidation')
+NUMBER_OF_FOLDS = config.get('machinelearning', 'number_of_folds')
 R_LOCATION = config.get('program', 'r_location')

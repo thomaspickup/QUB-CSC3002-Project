@@ -176,7 +176,7 @@ def analyze(sampleLocation, printer, statusbar):
                     writer = csv.writer(dataset_file, lineterminator='\n')
                     writer.writerows(dataset)
 
-                command = ["rscript", os.getcwd() + r"\mlcore\Product_Script.R"]
+                command = ["rscript", os.getcwd() + r"\mlcore\Product_Script.R", os.getcwd() + r"\tmp", configuration.MODEL_DIRECTORY, configuration.DATASET_DIRECTORY ]
 
                 functions.runScript(command, printer)
             else:
