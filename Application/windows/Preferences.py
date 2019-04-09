@@ -1,7 +1,8 @@
 from Tkinter import *
 from tkinter import ttk
 from app_modules import configuration
-import ConfigParser
+from scripts import functions
+import ConfigParser, tkMessageBox
 
 class Preferences():
     def btnSaveLocationsPressed(self):
@@ -33,8 +34,12 @@ class Preferences():
         self.preferencesWindow.destroy()
 
     def btnCuckooConnectPressed(self):
-        print("BTN CUCKOO CONNECT PRESSED")
+        isActive = functions.checkCuckooOnline(self.txtCuckooServer.get(), self.txtCuckooServerPort.get())
 
+        if isActive:
+            tkMessageBox.showinfo("Cuckoo Server Check", "Cuckoo Server: Connected")
+        else:
+            tkMessageBox.showwarning("Cuckoo Server Check", "Cuckoo Server: Connection Failed, please check the details provided.")
     def verifyLocations(self):
         print(configuration.MODEL_DIRECTORY)
 

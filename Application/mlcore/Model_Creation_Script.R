@@ -71,13 +71,12 @@ setwd("c:/Users/thomaspickup/icloudDrive/Documents/University/CSC3002/Assignment
 save(model, file = 'knn_model.rda')
 
 # Outputs the stats file
-fileConn<-file("accuracies.txt")
+fileConn<-file("accuracies.json")
 accuracy <- round((nr_correct/nr_test_items) * 100, digits=2)
-output <- c(paste("Accuracy: ", accuracy, "%", sep = ""),
-            "",
-            paste("Correct: ", nr_correct, " Predictions", sep = ""),
-            paste("Incorrect: ", nr_incorrect, " Predictions", sep = ""),
-            paste("Total: ", nr_test_items, " Test Items", sep = ""))
+output <- c(paste('{"dataset_accuracy":{"accuracy": "', accuracy, '%",', sep = ""),
+            paste('"correct": "', nr_correct, ' Predictions",', sep = ""),
+            paste('"incorrect": "', nr_incorrect, ' Predictions",', sep = ""),
+            paste('"total_items": "', nr_test_items, ' Test Items"}}', sep = ""))
 writeLines(output, fileConn)
 close(fileConn)
 

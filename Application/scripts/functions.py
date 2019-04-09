@@ -1,5 +1,5 @@
 from Tkinter import *
-import subprocess, requests
+import subprocess, requests, json, os, csv
 
 # This functions purpose is to run a script using the subprocess command and return the output of the script to a printer (Tkinter output)
 def runScript(command, printer):
@@ -46,3 +46,27 @@ def checkCuckooOnline(cuckoo_host, cuckoo_port):
         cuckooOnline = False
 
     return cuckooOnline
+
+def getJSON(filepath):
+    with open(filepath) as file:
+        json_file = json.load(file)
+
+    return json_file
+
+def getCSV(filepath, skipheaders):
+    fileExists = os.path.isfile(filepath)
+    csvReturn = []
+
+    if fileExists:
+        with open(filepath) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+
+            if skipheaders:
+                next(csv_reader, None)
+
+            for row in csv_reader:
+                csvReturn.append(row)
+    else:
+        csvReturn.append("Error")
+
+    return csvReturn

@@ -55,12 +55,7 @@ class Application(Frame):
 
     # Model Stats
     def btnModelStatsPressed(self):
-        fileExists = os.path.isfile(configuration.MODEL_DIRECTORY + r"\accuracies.txt")
-        if fileExists:
-            functions.printTextFile(configuration.MODEL_DIRECTORY + r"\accuracies.txt", self.commandWindowDisplay)
-            modelTable.modelTable(self)
-        else:
-            self.commandWindowDisplay.insert(END, "**Model Stats Doesn't Exist**\n")
+        modelTable.modelTable(self)
 
     # New Model
     def btnNewModelPressed(self):
@@ -156,35 +151,35 @@ class Application(Frame):
         self.txtFilePath = Entry(self.uploadPane)
         self.btnGetSample = Button(self.uploadPane, text = "Open File", command = self.btnGetSamplePressed)
         self.btnSubmitSample = Button(self.uploadPane, text = "Submit", command = self.btnSubmitSamplePressed)
-        self.txtFilePath.grid(row = 1, column = 0, columnspan = 6, sticky = "ew", padx = 5 , pady = 5)
-        self.btnGetSample.grid(row = 2, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
-        self.btnSubmitSample.grid(row = 2, column = 4, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.txtFilePath.grid(row = 1, column = 0, columnspan = 4, sticky = "nesw", padx = 5 , pady = 5)
+        self.btnGetSample.grid(row = 1, column = 4, columnspan = 2, sticky = "nesw", padx = 5, pady = 5)
+        self.btnSubmitSample.grid(row = 2, column = 0, columnspan = 6, sticky = "nesw", padx = 5, pady = 5)
 
         self.searchPane = LabelFrame(self.sideBar, text = "Cuckoo Search:", padx = 5, pady = 5)
         self.searchPane.pack(padx = 10, pady = 10, fill = "both")
         self.txtMD5Search = Entry(self.searchPane)
         self.btnSearchSample = Button(self.searchPane, text = "Search", command = self.btnSearchSamplePressed)
-        self.txtMD5Search.grid(row = 1, column = 0, columnspan = 4, sticky = "we", padx = 5 , pady = 5)
-        self.btnSearchSample.grid(row = 1, column = 4, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.txtMD5Search.grid(row = 1, column = 0, columnspan = 4, sticky = "nesw", padx = 5 , pady = 5)
+        self.btnSearchSample.grid(row = 1, column = 4, columnspan = 2, sticky = "nesw", padx = 5, pady = 5)
 
         # Sets up the Dataset Model uploadPane
         self.dsmodelPane = LabelFrame(self.sideBar, text = "DataSet / Model", padx = 5, pady = 5)
         self.dsmodelPane.pack(padx = 10, pady = 10, fill = "both")
         self.btnNewDataset = Button(self.dsmodelPane, text = "New DataSet", command = self.btnNewDatasetPressed)
         self.btnNewModel = Button(self.dsmodelPane, text = "New Model", command = self.btnNewModelPressed)
-        self.btnNewDataset.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
-        self.btnNewModel.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.btnNewDataset.grid(row = 0, column = 0, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
+        self.btnNewModel.grid(row = 0, column = 3, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
         self.btnDatasetStats = Button(self.dsmodelPane, text = "DataSet Stats", command = self.btnDatasetStatsPressed)
         self.btnModelStats = Button(self.dsmodelPane, text = "Model Stats", command = self.btnModelStatsPressed)
-        self.btnDatasetStats.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
-        self.btnModelStats.grid(row = 1, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.btnDatasetStats.grid(row = 1, column = 0, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
+        self.btnModelStats.grid(row = 1, column = 3, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
 
         self.utilitiesPane = LabelFrame(self.sideBar, text = "Utilities", padx = 5, pady = 5)
         self.utilitiesPane.pack(padx = 10, pady = 10, fill = "both")
         self.btnClearConsole = Button(self.utilitiesPane, text = "Clear Console", command = self.btnClearConsolePressed)
         self.btnCancelTask = Button(self.utilitiesPane, text = "Cancel Task", command = self.btnCancelTaskPressed)
-        self.btnClearConsole.grid(row = 0, column = 0, columnspan = 2, sticky = "w", padx = 5, pady = 5)
-        self.btnCancelTask.grid(row = 0, column = 2, columnspan = 2, sticky = "e", padx = 5, pady = 5)
+        self.btnClearConsole.grid(row = 0, column = 0, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
+        self.btnCancelTask.grid(row = 0, column = 3, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
 
         # Sets up the Title Bar
         self.titleFrame = Frame(self)
@@ -214,21 +209,23 @@ class Application(Frame):
         self.menuBar = Menu(self)
 
         self.fileMenu = Menu(self.menuBar, tearoff = 0)
-        self.fileMenu.add_command(label = "Create New Dataset", command = self.btnNewDatasetPressed)
-        self.fileMenu.add_command(label = "Create New Model", command = self.btnNewModelPressed)
+        self.fileMenu.add_command(label = "New Dataset", command = self.btnNewDatasetPressed)
+        self.fileMenu.add_command(label = "New Model", command = self.btnNewModelPressed)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Preferences", command = self.showPreferences)
+        self.dependancyMenu = Menu(self.menuBar, tearoff = 0)
+        self.dependancyMenu.add_command(label = "R 3.5.3", command = self.dependancyCheckAndInstallR)
+        if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
+            self.dependancyMenu.add_command(label = "Reload Cuckoo", command = self.dependancyCheckAndLaunchCuckoo)
+        self.fileMenu.add_cascade(label = "Dependencies", menu = self.dependancyMenu)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Quit", command = self.quit)
         self.menuBar.add_cascade(label = "File", menu = self.fileMenu)
 
-        self.dependancyMenu = Menu(self.menuBar, tearoff = 0)
-        self.dependancyMenu.add_command(label = "R 3.5.3", command = self.dependancyCheckAndInstallR)
-
-        if socket.gethostbyname(configuration.CUCKOO_SERVER) == "127.0.0.1":
-            self.dependancyMenu.add_command(label = "Reload Cuckoo", command = self.dependancyCheckAndLaunchCuckoo)
-
-        self.menuBar.add_cascade(label = "Dependencies", menu = self.dependancyMenu)
+        self.viewMenu = Menu(self.menuBar, tearoff = 0)
+        self.viewMenu.add_command(label = "Model Statistics", command = self.btnModelStatsPressed)
+        self.viewMenu.add_command(label = "Dataset Statistics", command = self.btnDatasetStatsPressed)
+        self.menuBar.add_cascade(label = "View", menu = self.viewMenu)
 
     def __init__(self, master = None):
         # Next start setting up the UI

@@ -1,11 +1,6 @@
 from Tkinter import *
+from scripts import functions
 import json, os, csv, sys, configuration
-
-def getJSON(filepath):
-    with open(filepath) as file:
-        json_file = json.load(file)
-
-    return json_file
 
 def compile(printer):
     # The directory that the malware reports are stored in
@@ -27,7 +22,7 @@ def compile(printer):
 
 
             # Opens the JSON file and decodes the JSON
-            data = getJSON(filepath)
+            data = functions.getJSON(filepath)
             if data['info']['score'] <= threshold_score:
                 continue
 
@@ -63,7 +58,7 @@ def compile(printer):
         row = []
 
         # Gets json file
-        data = getJSON(file)
+        data = functions.getJSON(file)
 
         if 'md5' in data['target']['file']:
             row.append(data['target']['file']['md5'])
