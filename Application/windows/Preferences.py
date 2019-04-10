@@ -6,46 +6,47 @@ import ConfigParser, tkMessageBox, tkFileDialog, os
 
 class Preferences():
     def btnSaveLocationsPressed(self):
-        self.btnCuckooConnectPressed()
-        self.verifyLocations()
+        errorString = self.verifyLocations()
+        if errorString == "":
+            cuckoo_server = self.txtCuckooServer.get()
+            cuckoo_server_port = self.txtCuckooServerPort.get()
+            sample_directory = self.txtSampleDirectory.get()
+            dataset_directory = self.txtDataSetDirectory.get()
+            model_directory = self.txtModelDirectory.get()
+            cuckoo_export_directory = self.txtCuckooExportDirectory.get()
+            reports_directory = self.txtReportsDirectory.get()
 
-        cuckoo_server = self.txtCuckooServer.get()
-        cuckoo_server_port = self.txtCuckooServerPort.get()
-        sample_directory = self.txtSampleDirectory.get()
-        dataset_directory = self.txtDataSetDirectory.get()
-        model_directory = self.txtModelDirectory.get()
-        cuckoo_export_directory = self.txtCuckooExportDirectory.get()
-        reports_directory = self.txtReportsDirectory.get()
+            r_location = self.txtRLocationDirectory.get()
 
-        r_location = self.txtRLocationDirectory.get()
+            run_boruta = self.borutaChecked.get()
+            run_crossvalidation = self.crossvalidationChecked.get()
+            number_of_folds = self.numFoldsSlider.get()
 
-        run_boruta = self.borutaChecked.get()
-        run_crossvalidation = self.crossvalidationChecked.get()
-        number_of_folds = self.numFoldsSlider.get()
+            config = ConfigParser.RawConfigParser()
 
-        config = ConfigParser.RawConfigParser()
+            config.read('config.ini')
 
-        config.read('config.ini')
+            config.set('locations', 'cuckoo_server', cuckoo_server)
+            config.set('locations', 'cuckoo_server_port', cuckoo_server_port)
+            config.set('locations', 'sample_directory', sample_directory)
+            config.set('locations', 'dataset_directory', dataset_directory)
+            config.set('locations', 'model_directory', model_directory)
+            config.set('locations', 'cuckoo_export_directory', cuckoo_export_directory)
+            config.set('locations', 'reports_directory', reports_directory)
 
-        config.set('locations', 'cuckoo_server', cuckoo_server)
-        config.set('locations', 'cuckoo_server_port', cuckoo_server_port)
-        config.set('locations', 'sample_directory', sample_directory)
-        config.set('locations', 'dataset_directory', dataset_directory)
-        config.set('locations', 'model_directory', model_directory)
-        config.set('locations', 'cuckoo_export_directory', cuckoo_export_directory)
-        config.set('locations', 'reports_directory', reports_directory)
+            config.set('program', 'r_location', r_location)
+            config.set('machinelearning', 'run_boruta', run_boruta)
+            config.set('machinelearning', 'run_crossvalidation', run_crossvalidation)
+            config.set('machinelearning', 'number_of_folds', number_of_folds)
 
-        config.set('program', 'r_location', r_location)
-        config.set('machinelearning', 'run_boruta', run_boruta)
-        config.set('machinelearning', 'run_crossvalidation', run_crossvalidation)
-        config.set('machinelearning', 'number_of_folds', number_of_folds)
+            with open('config.ini', 'w') as config_file:
+                config.write(config_file)
 
-        with open('config.ini', 'w') as config_file:
-            config.write(config_file)
+            reload(configuration)
 
-        reload(configuration)
-
-        self.preferencesWindow.destroy()
+            self.preferencesWindow.destroy()
+        else:
+            tkMessageBox.showwarning("Error Saving Settings", "The following errors were identified: \n" + errorString)
 
     def btnCuckooConnectPressed(self):
         isActive = functions.checkCuckooOnline(self.txtCuckooServer.get(), self.txtCuckooServerPort.get())
@@ -56,7 +57,17 @@ class Preferences():
             tkMessageBox.showwarning("Cuckoo Server Check", "Cuckoo Server: Connection Failed, please check the details provided.")
 
     def verifyLocations(self):
-        print(configuration.MODEL_DIRECTORY)
+        errorString = ""
+        cuckooOnline = functions.checkCuckooOnline(self.txtCuckooServer.get(), self.txtCuckooServerPort.get())
+
+        if not cuckooOnline: errorString = errorString + "Cuckoo Server cannot be contacted\n"
+        if not os.path.isdir(self.txtSampleDirectory.get()): errorString = errorString + "Sample Directory not valid\n"
+        if not os.path.isdir(self.txtDataSetDirectory.get()): errorString = errorString + "DataSet Directory not valid\n"
+        if not os.path.isdir(self.txtModelDirectory.get()): errorString = errorString + "Model Directory not valid\n"
+        if not os.path.isdir(self.txtCuckooExportDirectory.get()): errorString = errorString + "Cuckoo Export Directory not valid\n"
+        if not os.path.isdir(self.txtReportsDirectory.get()): errorString = errorString + "Reports Directory not valid\n"
+
+        return errorString
 
     def openFileDialog(self, textbox):
         directory = tkFileDialog.askdirectory()
