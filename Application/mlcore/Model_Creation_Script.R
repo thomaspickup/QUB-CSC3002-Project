@@ -74,7 +74,7 @@ if (length(args) == 5){
       cMatrix <- confusionMatrix(predictions, ds.test.this_fold[,malwareID_Col])
       nr_correct <- nr_correct + nrow(ds.test.this_fold[correct_predictions,])
       nr_test_items <- nr_test_items+ nrow(ds.test.this_fold)
-      nr_incorrect <- nr_incorrect + (nr_test_items - nr_correct)
+      nr_incorrect <- nr_incorrect + nrow(ds.test.this_fold[correct_predictions != 1,])
     }
   } else {
     # Create index to split based on labels
