@@ -2,7 +2,7 @@ from Tkinter import *
 from tkinter import ttk
 from app_modules import processSample, parserDataset, cuckooSearch, configuration
 from scripts import functions
-from windows import Preferences, modelTable, newDataset
+from windows import Preferences, modelTable, newDataset, datasetStats
 from socket import gethostbyname, gaierror
 import tkFileDialog, tkMessageBox, os, inspect, requests, time, csv, subprocess, thread
 
@@ -74,7 +74,7 @@ class Application(Frame):
 
     # DataSet Stats
     def btnDatasetStatsPressed(self):
-        print("DataSet Stats Pressed")
+        datasetStats.datasetStats(self)
 
     # New DataSet
     def btnNewDatasetPressed(self):
@@ -86,6 +86,7 @@ class Application(Frame):
 
     def newDataset(self):
         self.commandWindowDisplay.insert(END, "== New Dataset ==\n")
+
         if self.checkCuckooStatus():
             thread.start_new_thread(parserDataset.parser, (self.commandWindowDisplay, self.status, self.retrieveChecked, self.sampleChecked, self.datasetChecked ))
         else:
