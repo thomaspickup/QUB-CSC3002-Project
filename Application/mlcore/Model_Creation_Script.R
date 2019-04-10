@@ -1,4 +1,5 @@
 args = commandArgs(trailingOnly=TRUE)
+#args = c('C:/Users/thomaspickup/iCloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/dataset', 'C:/Users/thomaspickup/iCloudDrive/Documents/University/CSC3002/Assignment/CSC3002-Project/Application/model', 0, 1, 10)
 
 if (length(args) == 5){
   cat("~~ Model Production: Started ~~\n")
@@ -36,6 +37,7 @@ if (length(args) == 5){
   lastFeature_Col <- malwareID_Col - 1
 
   cat("- Performing Boruta Algorithm\n")
+
   if (args[3] == "1") {
     ds.boruta <- Boruta(ds[, malwareID_Col]~., data = ds, doTrace = 2)
     ds.boruta.final <- TentativeRoughFix(ds.boruta)
@@ -43,37 +45,62 @@ if (length(args) == 5){
 
     # Gets the final dataset using only the selected features
     ds.final <- ds[,ds.selected.attributes]
+
+    malwareID_Col <- ncol(ds.final)
+    lastFeature_Col <- malwareID_Col - 1
   } else {
     cat("** SKIPPING: Preferences set not to run Boruta Algorithm **\n")
     ds.final <- ds
   }
 
-  malwareID_Col <- ncol(ds.final)
-  lastFeature_Col <- malwareID_Col - 1
+  if (args[4] == "1"){
+    ds.training <- ds.final[sample(nrow(ds.final)),]
+    ds.training $folds <- cut(seq(1,nrow(ds.training)),breaks=as.numeric(args[5]),labels=FALSE)
 
-  # Create index to split based on labels
-  index <- createDataPartition(ds.final$MalwareID, p=0.9, list=FALSE)
+    nr_correct <- 0
+    nr_test_items <- 0
+    nr_incorrect <- 0
+    for(i in 1:as.numeric(args[5])) {
+      ds.training.this_fold = ds.training[ds.training$folds != i,]
+      ds.test.this_fold = ds.training[ds.training$folds == i,]
 
-  # Subset training set with index
-  ds.training <- ds.final[index,]
+      cat(paste("- Training Model Fold ", i, "/", args[5], "\n", sep = ""))
+      model <- train(ds.training[, 1:lastFeature_Col], ds.training[, malwareID_Col], method='knn')
 
-  # Subset test set with index
-  ds.test <- ds.final[-index,]
+      cat("- Evaluating Model with test set\n")
+      predictions<-predict(object=model,ds.test.this_fold[,1:lastFeature_Col])
 
-  cat("- Training Model\n")
-  model <- train(ds.training[, 1:lastFeature_Col], ds.training[, malwareID_Col], method='knn')
+      correct_predictions <- predictions == ds.test.this_fold[,malwareID_Col]
+      cMatrix <- confusionMatrix(predictions, ds.test.this_fold[,malwareID_Col])
+      nr_correct <- nr_correct + nrow(ds.test.this_fold[correct_predictions,])
+      nr_test_items <- nr_test_items+ nrow(ds.test.this_fold)
+      nr_incorrect <- nr_incorrect + (nr_test_items - nr_correct)
+    }
+  } else {
+    # Create index to split based on labels
+    index <- createDataPartition(ds.final$MalwareID, p=0.9, list=FALSE)
 
-  cat("- Evaluating Model with test set\n")
-  predictions<-predict(object=model,ds.test[,1:lastFeature_Col])
+    # Subset training set with index
+    ds.training <- ds.final[index,]
 
-  # Evaluate the predictions
+    # Subset test set with index
+    ds.test <- ds.final[-index,]
+
+    cat("- Training Model\n")
+    model <- train(ds.training[, 1:lastFeature_Col], ds.training[, malwareID_Col], method='knn')
+
+    cat("- Evaluating Model with test set\n")
+    predictions<-predict(object=model,ds.test[,1:lastFeature_Col])
+
+    # Evaluate the predictions
+    correct_predictions<- predictions == ds.test[,malwareID_Col]
+    cMatrix<- confusionMatrix(predictions, ds.test[,malwareID_Col])
+    nr_correct<-nrow(ds.test[correct_predictions,])
+    nr_test_items<-nrow(ds.test)
+    nr_incorrect<-nr_test_items - nr_correct
+  }
+
   cat("- Saving Model and statistics\n")
-  correct_predictions<- predictions == ds.test[,malwareID_Col]
-  cMatrix<- confusionMatrix(predictions, ds.test[,malwareID_Col])
-  nr_correct<-nrow(ds.test[correct_predictions,])
-  nr_test_items<-nrow(ds.test)
-  nr_incorrect<-nr_test_items - nr_correct
-
   # Saves the model to file
   setwd(args[2])
   save(model, file = 'knn_model.rda')

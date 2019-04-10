@@ -68,6 +68,7 @@ class Application(Frame):
     def newModel(self, printer):
         self.commandWindowDisplay.insert(END, "== New Model ==\n")
         self.status.config(text = "Running Command: New Model")
+
         command = ["rscript", os.getcwd() + r"\mlcore\Model_Creation_Script.R", configuration.DATASET_DIRECTORY, configuration.MODEL_DIRECTORY, configuration.RUN_BORUTA, configuration.RUN_CROSSVALIDATION, configuration.NUMBER_OF_FOLDS]
         functions.runScript(command, printer)
         self.status.config(text = "Waiting for Command...")
