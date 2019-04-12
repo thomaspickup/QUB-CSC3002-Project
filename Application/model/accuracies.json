@@ -1,4 +1,4 @@
-{"dataset_accuracy":{"accuracy": "81.21%",
-"correct": "2282 Predictions",
-"incorrect": "528 Predictions",
-"total_items": "2810 Test Items"}}
+{"dataset_accuracy":{"accuracy": "73.38%",
+"correct": "204 Predictions",
+"incorrect": "74 Predictions",
+"total_items": "278 Test Items"}}
