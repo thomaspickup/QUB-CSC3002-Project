@@ -100,13 +100,6 @@ class Application(Frame):
         if answer:
             self.commandWindowDisplay.delete("1.0", END)
 
-    # Cancel Task
-    def btnCancelTaskPressed(self):
-        answer = tkMessageBox.askyesno("Cancel Task","Are you sure you want to cancel the current task?")
-
-        if answer:
-            print("Cancel Task Pressed")
-
     # Show Preferences Pane
     def showPreferences(self):
         Preferences.Preferences(self)
@@ -196,9 +189,7 @@ class Application(Frame):
         self.utilitiesPane = LabelFrame(self.sideBar, text = "Utilities", padx = 5, pady = 5)
         self.utilitiesPane.pack(padx = 10, pady = 10, fill = "both")
         self.btnClearConsole = Button(self.utilitiesPane, text = "Clear Console", command = self.btnClearConsolePressed)
-        self.btnCancelTask = Button(self.utilitiesPane, text = "Cancel Task", command = self.btnCancelTaskPressed)
-        self.btnClearConsole.grid(row = 0, column = 0, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
-        self.btnCancelTask.grid(row = 0, column = 3, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
+        self.btnClearConsole.grid(row = 0, column = 3, columnspan = 3, sticky = "nesw", padx = 5, pady = 5)
 
         # Sets up the Title Bar
         self.titleFrame = Frame(self)
