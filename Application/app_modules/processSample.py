@@ -16,17 +16,22 @@ def submitSample(malware_file, printer, server, request_headers):
     this_request = server + r"tasks/view/" + str(task_id)
     r = requests.get(this_request)
     current_status = r.json()["task"]["status"]
-    printer.insert(END, current_status + "\n")
+    printer.insert(END, current_status)
 
     while current_status != "reported":
         time.sleep(5)
         r = requests.get(this_request)
-        current_status = r.json()["task"]["status"]
-        printer.insert(END, current_status + "\n")
+        this_status = r.json()["task"]["status"]
+
+        if (this_status == current_status):
+            printer.insert(END, ".")
+        else:
+            printer.insert(END, "\n" + this_status)
+            current_status = this_status
 
         pass
 
-    printer.insert(END, "- Completed Testing of Item\n")
+    printer.insert(END, "\n- Completed Testing of Item\n")
 
     return task_id
 
