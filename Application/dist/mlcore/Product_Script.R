@@ -1,0 +1,28 @@
+args = commandArgs(trailingOnly=TRUE)
+# Sets working directory to dataset location
+setwd(args[1])
+
+cat("- Importing Libraries\n")
+library(caret)
+library(e1071)
+
+# Sets the random seed to ensure repeatability
+set.seed(3002)
+
+cat("- Importing Dataset as CSV\n")
+predict_this<-read.csv("product_api.csv")
+
+# Nullifies any identifying data
+predict_this$SampleName<-NULL
+
+setwd(args[2])
+load("knn_model.rda")
+
+cat("- Evaluating Model with sample passed\n")
+predictions<-predict(object=model,predict_this)
+
+setwd(args[3])
+malware_types<-read.csv("malware_types.csv")
+
+prediction_text = levels(malware_types[, 2])[predictions]
+cat(paste("Predicted Class: ", prediction_text, "\n"))
